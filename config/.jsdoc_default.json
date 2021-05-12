@@ -1,0 +1,9 @@
+{
+  "source": {
+    "includePattern": ".+\\.(m|c)?js(doc|x)?$"
+  },
+  "opts": {
+    "encoding": "utf8",
+    "destination": "./docs/"
+  }
+}
