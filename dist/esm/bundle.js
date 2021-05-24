@@ -63,6 +63,8 @@ class ODataMockGenerator {
       this._rootUri = `${this._rootUri}/`;
     }
 
+    this._predefinedChosenValues = {};
+
     this._prepareMetadata(metadata);
   }
 
@@ -116,13 +118,23 @@ class ODataMockGenerator {
         const iPropRefLength = oNavProp.from.propRef.length;
         for (let j = 0; j < iPropRefLength; j++) {
           for (let i = 0; i < oMockData[sEntitySetName].length; i++) {
-            const oEntity = oMockData[sEntitySetName][i];
             // copy the value from the principle to the dependant;
-            oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] = oEntity[oNavProp.from.propRef[j]];
+            const oEntity = oMockData[sEntitySetName][i];
+
+            if (this._predefinedValuesConfig[oNavProp.name] &&
+              this._predefinedValuesConfig[oNavProp.name][oNavProp.to.propRef[j]]) {
+              const chosenValues = this._predefinedChosenValues[oNavProp.name][oNavProp.to.propRef[j]];
+              oEntity[oNavProp.from.propRef[j]] = chosenValues[Math.floor(Math.random() * chosenValues.length)];
+            } else {
+              oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] = oEntity[oNavProp.from.propRef[j]];
+            }
           }
         }
       }
+    });
 
+    // set URIs 
+    jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
       jQuery.each(oMockData[sEntitySetName], (iIndex, oEntry) => {
         // add the metadata for the entry
         oEntry.__metadata = {
@@ -287,11 +299,22 @@ class ODataMockGenerator {
     if (this._predefinedValuesConfig[entityType.name] &&
       this._predefinedValuesConfig[entityType.name][property.name]) {
 
+      if (!this._predefinedChosenValues[entityType.name]) {
+        this._predefinedChosenValues[entityType.name] = {};
+      }
+
+      if (!this._predefinedChosenValues[entityType.name][property.name]) {
+        this._predefinedChosenValues[entityType.name][property.name] = [];
+      }
+
       const propertyConfig = this._predefinedValuesConfig[entityType.name][property.name];
+      let chosenValue;
 
       if (Array.isArray(propertyConfig)) {
         //array of values
-        return propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
+        chosenValue = propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
+        this._predefinedChosenValues[entityType.name][property.name].push(chosenValue);
+        return chosenValue;
       } else if (typeof propertyConfig === "string" && propertyConfig.indexOf("$ref") !== -1) {
         const variableName = propertyConfig.split(":")[1];
 
@@ -299,7 +322,9 @@ class ODataMockGenerator {
           const variable = this._variables[variableName];
 
           if (Array.isArray(variable)) {
-            return variable[Math.floor(Math.random() * variable.length)];
+            chosenValue = variable[Math.floor(Math.random() * variable.length)];
+            this._predefinedChosenValues[entityType.name][property.name].push(chosenValue);
+            return chosenValue;
           } else {
             return variable;
           }
