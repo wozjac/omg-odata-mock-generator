@@ -4,7 +4,7 @@ import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
 const metadataXml = readFileSync("test/support/fixtures/metadataRefConstraints.xml").toString();
 
-describe("ODataMockGenerator - generation based on metadata with referntial constraints", () => {
+describe("ODataMockGenerator - generation based on metadata with referential constraints", () => {
   it("creates correct IDs in properties, which are in referential constraints", () => {
     const generator = new ODataMockGenerator(metadataXml, {
       numberOfEntitiesToGenerate: 10,

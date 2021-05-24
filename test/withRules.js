@@ -25,6 +25,28 @@ describe("ODataMockGenerator - generating with rules", () => {
     expect(mockData).not.to.have.property("Advertisements");
   });
 
+  it("creates different number of entities for configured entity sets", () => {
+    const generator = new ODataMockGenerator(metadataXml, {
+      numberOfEntitiesToGenerate: 5,
+      rules: {
+        lengthOf: {
+          Products: 2,
+          Categories: 12
+        }
+      }
+    });
+
+    const mockData = generator.createMockData();
+
+    expect(mockData).not.to.be.null;
+    expect(mockData.Products).has.length(2);
+    expect(mockData.ProductDetails).has.length(5);
+    expect(mockData.Categories).has.length(12);
+    expect(mockData.Persons).has.length(5);
+    expect(mockData.PersonDetails).has.length(5);
+    expect(mockData.Advertisements).has.length(5);
+  });
+
   it("creates data with predefined values", () => {
     const generator = new ODataMockGenerator(metadataXml, {
       numberOfEntitiesToGenerate: 40,
