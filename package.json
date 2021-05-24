@@ -1,6 +1,6 @@
 {
   "name": "omg-odata-mock-generator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Configurable data generator for OData metadata",
   "type": "module",
   "main": "dist/esm/bundle.js",
