@@ -37,6 +37,7 @@
     "release": "standard-version"
   },
   "dependencies": {
+    "faker": "^5.5.3",
     "jquery": "^3.6.0",
     "jsdom": "^16.5.3"
   },

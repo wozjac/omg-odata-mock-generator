@@ -34,6 +34,10 @@
         <Property Name="Price"
           Type="Edm.Double"
           Nullable="false" />
+         <Property Name="Code"
+          Type="Edm.String"
+          MaxLength="4"
+          Nullable="false" />
         <Property Name="Single"
           Type="Edm.Single"
           Nullable="false" />
@@ -132,6 +136,7 @@
         <Property Name="State"
           Type="Edm.String" />
         <Property Name="ZipCode"
+          MaxLength="5"
           Type="Edm.String" />
         <Property Name="Country"
           Type="Edm.String" />

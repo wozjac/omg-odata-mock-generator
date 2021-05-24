@@ -1,30 +1,7 @@
 import { JSDOM } from "jsdom"; import _jQuery from "jquery"; const { window } = new JSDOM(""); const jQuery = _jQuery(window);
+import faker from 'faker';
+
 //! Copyright (c) 2021 Jacek Woźniczak
-
-//! Permission is hereby granted, free of charge, to any person obtaining a copy
-//! of this software and associated documentation files (the "Software"), to deal
-//! in the Software without restriction, including without limitation the rights
-//! to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//! copies of the Software, and to permit persons to whom the Software is
-//! furnished to do so, subject to the following conditions:
-
-//! The above copyright notice and this permission notice shall be included in all
-//! copies or substantial portions of the Software.
-
-//! THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//! IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//! FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//! AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//! LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//! OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//! SOFTWARE.
-
-//! This file has been modified by Q-Prod Jacek Woźniczak to add additional features.
-//! The original version is https://github.com/SAP/openui5/blob/master/src/sap.ui.core/src/sap/ui/core/util/MockServer.js
-//! with the license:
-//! OpenUI5
-//! (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
-//! Licensed under the Apache License, Version 2.0 - see https://github.com/SAP/openui5/blob/master/LICENSE.txt.
 
 /**
  * OData Mock Data Generator
@@ -42,6 +19,7 @@ class ODataMockGenerator {
    * @param {string[]} [options.rules.distinctValues=[]] Generate only distinct entries (based on the key properties) for the given entity sets 
    * @param {Object} [options.rules.predefined={}] Predefined values for the given entities, see README
    * @param {Object} [options.rules.variables={}] Variables to use in "predefined" rules, see README
+   * @param {Object} [options.rules.faker={}] Faker.js methods used to generate data for given properties, see README
    */
   constructor(metadata, options = {}) {
     if (!metadata) {
@@ -56,6 +34,7 @@ class ODataMockGenerator {
     this._skipMockGeneration = options.rules.skipMockGeneration || [];
     this._distinctValues = options.rules.distinctValues || [];
     this._variables = options.rules.variables || {};
+    this._fakerConfig = options.rules.faker || {};
     this._numberOfEntities = options.numberOfEntitiesToGenerate || 30;
     this._rootUri = options.mockDataRootURI || "";
 
@@ -189,7 +168,8 @@ class ODataMockGenerator {
           "type": type.substring(type.lastIndexOf(".") + 1),
           "name": $Property.attr("Name"),
           "precision": $Property.attr("Precision"),
-          "scale": $Property.attr("Scale")
+          "scale": $Property.attr("Scale"),
+          "maxLength": $Property.attr("MaxLength") ? Number.parseInt($Property.attr("MaxLength")) : undefined
         });
       });
 
@@ -361,6 +341,25 @@ class ODataMockGenerator {
       }
     }
 
+    // faker?
+    if (this._fakerConfig[entityType.name] &&
+      this._fakerConfig[entityType.name][property.name]) {
+
+      const fakerCall = this._fakerConfig[entityType.name][property.name].split(".");
+
+      try {
+        let generatedValue = faker[fakerCall[0]][fakerCall[1]].call();
+
+        if (property.maxLength) {
+          generatedValue = generatedValue.substring(0, property.maxLength);
+        }
+
+        return generatedValue;
+      } catch (error) {
+        throw new Error(`faker.js call error, check the config for ${entityType.name}/${property.name}`);
+      }
+    }
+
     //standard way - random values
     let iIndex = iIndexParameter;
 
@@ -369,8 +368,15 @@ class ODataMockGenerator {
     }
 
     switch (property.type) {
-      case "String":
-        return property.name + " " + iIndex;
+      case "String": {
+        let value = property.name + " " + iIndex;
+
+        if (property.maxLength) {
+          value = property.name.substring(0, property.maxLength - iIndex + 1);
+        }
+
+        return value;
+      }
       case "DateTime": {
         const date = new Date();
         date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTime") * 20));

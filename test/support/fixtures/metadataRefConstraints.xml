@@ -42,7 +42,7 @@
         <Property Name="ContactPhone1" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false"
           sap:label="Phone" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"
           sap:semantics="tel" />
-        <Property Name="ContactPhone2" Type="Edm.String" Nullable="false" MaxLength="30" sap:unicode="false"
+        <Property Name="ContactPhone2" Type="Edm.String" Nullable="false" MaxLength="10" sap:unicode="false"
           sap:label="Fax" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"
           sap:semantics="tel" />
       </EntityType>

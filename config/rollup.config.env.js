@@ -6,7 +6,7 @@ const input = ["src/ODataMockGenerator.js"];
 
 export default [{
   input,
-  external: ["jquery"],
+  external: ["jquery", "faker"],
   plugins: [
     commonjs(),
     babel({
@@ -33,7 +33,8 @@ export default [{
     sourcemap: true,
     file: "dist/preset-env/bundle.min.js",
     globals: {
-      jquery: "jQuery"
+      jquery: "jQuery",
+      faker: "faker"
     }
   }]
 }];
