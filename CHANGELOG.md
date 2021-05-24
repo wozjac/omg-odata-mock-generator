@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.0.5...v1.1.0) (2021-05-24)
+
+
+### Features
+
+* add faker.js support via rules in options ([9334b67](https://github.com/wozjac/omg-odata-mock-generator/commit/9334b67f6a471d137186a4a7e4eac695c92b3e2a))
+* add option for setting each entity set size ([c475429](https://github.com/wozjac/omg-odata-mock-generator/commit/c4754290b3f1ab461cd5f5808098ec0c7b29852b))
+
 ### [1.0.5](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.0.4...v1.0.5) (2021-05-24)
 
 ### [1.0.4](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.0.3...v1.0.4) (2021-05-24)
