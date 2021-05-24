@@ -8,9 +8,6 @@
   "files": [
     "dist"
   ],
-  "engines": {
-    "node": ">= 13.2.0"
-  },
   "author": "Q-Prod Jacek Woźniczak <wozjac@zoho.com> (https://twitter.com/jacekwoz)",
   "bugs": "https://github.com/wozjac/omg-odata-mock-generator/issues",
   "homepage": "https://github.com/wozjac/omg-odata-mock-generator",
