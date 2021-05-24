@@ -8,6 +8,7 @@
 ## Overview
 Generates random mock data for entities described in the OData metadata document.
 Based on the code from [OpenUI5 Mock Server](https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer), but has additional features for influencing the result:  
+- use faker.js API methods for data generation
 - skip generation of Entitiy Sets you don't need  
 - provide sets of values, which should be used instead of pure random values   
 - more meanigful and related data - values from one property can have a specific value based on a value from another property, which helps with building navigations  
@@ -131,6 +132,33 @@ For example:
 {
   rules: {
     skipMockGeneration: ["Persons", "Suppliers"]
+  }
+}
+```
+### Using faker.js
+Faker.js [API methods](https://marak.github.io/faker.js/#toc5__anchor) can be provided and they will be used 
+instead of default logic for data generation. If the string property has *MaxLength" attribute, generated value 
+will be limited accordingly.
+```javascript
+{
+  rules: {
+    predefined: {
+      Entity: {
+        Property: [Value1, Value2, Value3]
+      }
+    }
+  }
+}
+```
+For example:
+```javascript
+{
+  rules: {
+    faker: {
+      Product: {
+        Name: "commerce.productName"
+      }
+    }
   }
 }
 ```

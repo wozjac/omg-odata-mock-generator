@@ -11,12 +11,17 @@ function run() {
   const metadata = getMetadata();
 
   const options = {
-    numberOfEntitiesToGenerate: 21,
+    numberOfEntitiesToGenerate: 3,
     mockDataRootURI: "my/path",
     rules: {
       skipMockGeneration: ["Persons", "Suppliers"],
       variables: {
         categoryIds: [1, 2, 3]
+      },
+      faker: {
+        Product: {
+          Name: "commerce.productName"
+        }
       },
       distinctValues: ["Categories"],
       predefined: {

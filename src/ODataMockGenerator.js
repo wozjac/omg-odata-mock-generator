@@ -25,6 +25,8 @@
 //! (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
 //! Licensed under the Apache License, Version 2.0 - see https://github.com/SAP/openui5/blob/master/LICENSE.txt.
 
+import faker from "faker";
+
 /**
  * OData Mock Data Generator
  * 
@@ -41,6 +43,7 @@ export class ODataMockGenerator {
    * @param {string[]} [options.rules.distinctValues=[]] Generate only distinct entries (based on the key properties) for the given entity sets 
    * @param {Object} [options.rules.predefined={}] Predefined values for the given entities, see README
    * @param {Object} [options.rules.variables={}] Variables to use in "predefined" rules, see README
+   * @param {Object} [options.rules.faker={}] Faker.js methods used to generate data for given properties, see README
    */
   constructor(metadata, options = {}) {
     if (!metadata) {
@@ -55,12 +58,15 @@ export class ODataMockGenerator {
     this._skipMockGeneration = options.rules.skipMockGeneration || [];
     this._distinctValues = options.rules.distinctValues || [];
     this._variables = options.rules.variables || {};
+    this._fakerConfig = options.rules.faker || {};
     this._numberOfEntities = options.numberOfEntitiesToGenerate || 30;
     this._rootUri = options.mockDataRootURI || "";
 
     if (this._rootUri.substr(this._rootUri.length - 1) !== "/") {
       this._rootUri = `${this._rootUri}/`;
     }
+
+    this._predefinedChosenValues = {};
 
     this._prepareMetadata(metadata);
   }
@@ -115,13 +121,23 @@ export class ODataMockGenerator {
         const iPropRefLength = oNavProp.from.propRef.length;
         for (let j = 0; j < iPropRefLength; j++) {
           for (let i = 0; i < oMockData[sEntitySetName].length; i++) {
-            const oEntity = oMockData[sEntitySetName][i];
             // copy the value from the principle to the dependant;
-            oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] = oEntity[oNavProp.from.propRef[j]];
+            const oEntity = oMockData[sEntitySetName][i];
+
+            if (this._predefinedValuesConfig[oNavProp.name] &&
+              this._predefinedValuesConfig[oNavProp.name][oNavProp.to.propRef[j]]) {
+              const chosenValues = this._predefinedChosenValues[oNavProp.name][oNavProp.to.propRef[j]];
+              oEntity[oNavProp.from.propRef[j]] = chosenValues[Math.floor(Math.random() * chosenValues.length)];
+            } else {
+              oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] = oEntity[oNavProp.from.propRef[j]];
+            }
           }
         }
       }
+    });
 
+    // set URIs 
+    jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
       jQuery.each(oMockData[sEntitySetName], (iIndex, oEntry) => {
         // add the metadata for the entry
         oEntry.__metadata = {
@@ -176,7 +192,8 @@ export class ODataMockGenerator {
           "type": type.substring(type.lastIndexOf(".") + 1),
           "name": $Property.attr("Name"),
           "precision": $Property.attr("Precision"),
-          "scale": $Property.attr("Scale")
+          "scale": $Property.attr("Scale"),
+          "maxLength": $Property.attr("MaxLength") ? Number.parseInt($Property.attr("MaxLength")) : undefined
         });
       });
 
@@ -286,11 +303,22 @@ export class ODataMockGenerator {
     if (this._predefinedValuesConfig[entityType.name] &&
       this._predefinedValuesConfig[entityType.name][property.name]) {
 
+      if (!this._predefinedChosenValues[entityType.name]) {
+        this._predefinedChosenValues[entityType.name] = {};
+      }
+
+      if (!this._predefinedChosenValues[entityType.name][property.name]) {
+        this._predefinedChosenValues[entityType.name][property.name] = [];
+      }
+
       const propertyConfig = this._predefinedValuesConfig[entityType.name][property.name];
+      let chosenValue;
 
       if (Array.isArray(propertyConfig)) {
         //array of values
-        return propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
+        chosenValue = propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
+        this._predefinedChosenValues[entityType.name][property.name].push(chosenValue);
+        return chosenValue;
       } else if (typeof propertyConfig === "string" && propertyConfig.indexOf("$ref") !== -1) {
         const variableName = propertyConfig.split(":")[1];
 
@@ -298,7 +326,9 @@ export class ODataMockGenerator {
           const variable = this._variables[variableName];
 
           if (Array.isArray(variable)) {
-            return variable[Math.floor(Math.random() * variable.length)];
+            chosenValue = variable[Math.floor(Math.random() * variable.length)];
+            this._predefinedChosenValues[entityType.name][property.name].push(chosenValue);
+            return chosenValue;
           } else {
             return variable;
           }
@@ -335,6 +365,25 @@ export class ODataMockGenerator {
       }
     }
 
+    // faker?
+    if (this._fakerConfig[entityType.name] &&
+      this._fakerConfig[entityType.name][property.name]) {
+
+      const fakerCall = this._fakerConfig[entityType.name][property.name].split(".");
+
+      try {
+        let generatedValue = faker[fakerCall[0]][fakerCall[1]].call();
+
+        if (property.maxLength) {
+          generatedValue = generatedValue.substring(0, property.maxLength);
+        }
+
+        return generatedValue;
+      } catch (error) {
+        throw new Error(`faker.js call error, check the config for ${entityType.name}/${property.name}`);
+      }
+    }
+
     //standard way - random values
     let iIndex = iIndexParameter;
 
@@ -343,8 +392,15 @@ export class ODataMockGenerator {
     }
 
     switch (property.type) {
-      case "String":
-        return property.name + " " + iIndex;
+      case "String": {
+        let value = property.name + " " + iIndex;
+
+        if (property.maxLength) {
+          value = property.name.substring(0, property.maxLength - iIndex + 1);
+        }
+
+        return value;
+      }
       case "DateTime": {
         const date = new Date();
         date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTime") * 20));

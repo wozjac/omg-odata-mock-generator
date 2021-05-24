@@ -50,6 +50,7 @@ describe("ODataMockGenerator - generating with rules", () => {
     for (const product of mockData.Products) {
       expect(product.Rating).to.be.a("number");
       expect(product.Rating).to.be.oneOf([1, 2, 3]);
+      expect(product.__metadata.uri).to.equal(`/Products(${product.ID})`);
     }
   });
 
@@ -87,6 +88,7 @@ describe("ODataMockGenerator - generating with rules", () => {
       expect(product.Rating).to.be.a("number");
       expect(product.Rating).to.be.oneOf([1, 2, 3]);
       expect(product.Description).to.be.a("string");
+      expect(product.__metadata.uri).to.equal(`/Products(${product.ID})`);
 
       // for Rating 1 description is predefined
       if (product.Rating === 1) {
@@ -139,6 +141,7 @@ describe("ODataMockGenerator - generating with rules", () => {
       expect(category.ID).to.be.oneOf([1, 2, 3]);
       expect(category.Name).to.be.a("string");
       expect(category.Name).to.equal(`My Category${category.ID}`);
+      expect(category.__metadata.uri).to.equal(`/Categories(${category.ID})`);
     }
   });
 
@@ -171,6 +174,7 @@ describe("ODataMockGenerator - generating with rules", () => {
 
     for (const category of mockData.Categories) {
       expect(category.ID).to.be.oneOf([1, 2, 3]);
+      expect(category.__metadata.uri).to.equal(`/Categories(${category.ID})`);
     }
   });
 });
