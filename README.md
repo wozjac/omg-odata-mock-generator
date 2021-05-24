@@ -9,6 +9,7 @@
 Generates random mock data for entities described in the OData metadata document.
 Based on the code from [OpenUI5 Mock Server](https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer), but has additional features for influencing the result:  
 - use faker.js API methods for data generation
+- generate specific number of entities for given entity sets
 - skip generation of Entitiy Sets you don't need  
 - provide sets of values, which should be used instead of pure random values   
 - more meanigful and related data - values from one property can have a specific value based on a value from another property, which helps with building navigations  
@@ -57,7 +58,9 @@ Options parameter structure is as follows:
     predefined: { <configuration for predefined values> }, // default empty
     skipMockGeneration: ["EntitySet1", "EntitySet2", ...], // default empty
     distinctValues: [ "EntitySet1", "EntitySet2", ...], // default empty
-    variables: { <variables for predefined values> } // default empty
+    variables: { <variables for predefined values> }, // default empty
+    faker: { configuration for faker.js }, // default empty
+    lengthOf: { entities size config } // default empty
   }
 }
 ```
@@ -90,6 +93,8 @@ will generate 30 entries for each entity set
 See [samples/generatedDataSample.json](./samples/generatedDataSample.json)
 
 ### Setting number of entities
+*numberOfEntitiesToGenerate* sets the global, default number of generated entries; this can be overwritten
+for specific entity sets using *rules.lengthOf* option
 ```javascript
 const options = {
   numberOfEntitiesToGenerate: 3
@@ -98,7 +103,18 @@ const options = {
 const generator = new ODataMockGenerator(metadata, options)
 const mockData = generator.createMockData();
 ```
-Each entity set will have 3 entries
+Each entity set will have 3 entries. Setting generation of 2 entries for Products, 12 for Categories:
+```javascript
+const options = {
+  numberOfEntitiesToGenerate: 3,
+  rules: {
+    lengthOf: {
+      Products: 2,
+      Categories: 12
+    }
+  }
+}
+```
 
 ### Setting the root URI
 ```javascript
@@ -152,7 +168,7 @@ will be limited accordingly.
 ```
 For example:
 ```javascript
-{
+const options = {
   rules: {
     faker: {
       Product: {

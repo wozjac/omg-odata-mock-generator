@@ -20,6 +20,7 @@ class ODataMockGenerator {
    * @param {Object} [options.rules.predefined={}] Predefined values for the given entities, see README
    * @param {Object} [options.rules.variables={}] Variables to use in "predefined" rules, see README
    * @param {Object} [options.rules.faker={}] Faker.js methods used to generate data for given properties, see README
+   * @param {Object} [options.rules.lengthOf={}] Number of entities to generate for given entity sets, see README
    */
   constructor(metadata, options = {}) {
     if (!metadata) {
@@ -35,6 +36,7 @@ class ODataMockGenerator {
     this._distinctValues = options.rules.distinctValues || [];
     this._variables = options.rules.variables || {};
     this._fakerConfig = options.rules.faker || {};
+    this._customNumberOfEntities = options.rules.lengthOf || {};
     this._numberOfEntities = options.numberOfEntitiesToGenerate || 30;
     this._rootUri = options.mockDataRootURI || "";
 
@@ -212,7 +214,15 @@ class ODataMockGenerator {
     const oEntityType = mEntityTypes[oEntitySet.type];
     let aMockedEntries = [];
 
-    for (let i = 0; i < this._numberOfEntities; i++) {
+    let numberOfEntities;
+
+    if (this._customNumberOfEntities[oEntitySet.name]) {
+      numberOfEntities = this._customNumberOfEntities[oEntitySet.name];
+    } else {
+      numberOfEntities = this._numberOfEntities;
+    }
+
+    for (let i = 0; i < numberOfEntities; i++) {
       aMockedEntries.push(this._generateDataFromEntity(oEntityType, i + 1, mComplexTypes));
     }
 
