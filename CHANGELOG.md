@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.1.1...v1.1.2) (2021-05-25)
+
+
+### Bug Fixes
+
+* add support for faker.js fake() method with mustache templats ([e5f8d75](https://github.com/wozjac/omg-odata-mock-generator/commit/e5f8d75cf7fbc3e06a5add8348bfdccc5f50ce25))
+
 ### [1.1.1](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.1.0...v1.1.1) (2021-05-25)
 
 
