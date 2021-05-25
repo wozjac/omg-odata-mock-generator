@@ -379,10 +379,17 @@ export class ODataMockGenerator {
     if (this._fakerConfig[entityType.name] &&
       this._fakerConfig[entityType.name][property.name]) {
 
-      const fakerCall = this._fakerConfig[entityType.name][property.name].split(".");
+      const fakerCall = this._fakerConfig[entityType.name][property.name];
+      let generatedValue;
 
+      // Mustache template?
       try {
-        let generatedValue = faker[fakerCall[0]][fakerCall[1]].call();
+        if (fakerCall.indexOf("{{") !== -1) {
+          generatedValue = faker.fake(fakerCall);
+        } else {
+          const fakerCallParts = fakerCall.split(".");
+          generatedValue = faker[fakerCallParts[0]][fakerCallParts[1]].call();
+        }
 
         if (property.maxLength) {
           generatedValue = generatedValue.substring(0, property.maxLength);
