@@ -40,4 +40,23 @@ describe("ODataMockGenerator - generating with faker", () => {
       expect(supplier.ContactPhone2).to.have.lengthOf(10);
     }
   });
+
+  it("generates faker data using Mustache template style", () => {
+    const generator = new ODataMockGenerator(metadataXml, {
+      numberOfEntitiesToGenerate: 5,
+      rules: {
+        faker: {
+          Supplier: {
+            Name: "{{system.semver}} --- {{datatype.number}}",
+          }
+        }
+      }
+    });
+
+    const mockData = generator.createMockData();
+
+    for (const supplier of mockData.Suppliers) {
+      expect(supplier.Name).to.match(/\d*\.\d*\.\d* --- \d*/);
+    }
+  });
 });

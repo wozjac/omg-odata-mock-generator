@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.1.0...v1.1.1) (2021-05-25)
+
+
+### Bug Fixes
+
+* correct standard way of numbering generated properties ([027de93](https://github.com/wozjac/omg-odata-mock-generator/commit/027de937970aa055f04416ec59468f47ec7430af))
+
 ## [1.1.0](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.0.5...v1.1.0) (2021-05-24)
 
 
