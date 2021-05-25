@@ -36,7 +36,7 @@ export class ODataMockGenerator {
    * @constructor
    * @param {string} metadata OData metadata XML 
    * @param {Object} [options={}] Generation options and rules
-   * @param {number} [options.numberOfEntitiesToGenerate=30] Number of entities to generate for each entity set
+   * @param {number} [options.defaultLengthOfEntitySets=30] Number of entities to generate for each entity set
    * @param {string} [options.mockDataRootURI=""] Root URI which prefixes __metadata.uri property in the generated entities
    * @param {Object} [options.rules={}] Additional rules
    * @param {string[]} [options.rules.skipMockGeneration=[]] Do not generate data for the given entity sets
@@ -61,7 +61,7 @@ export class ODataMockGenerator {
     this._variables = options.rules.variables || {};
     this._fakerConfig = options.rules.faker || {};
     this._customNumberOfEntities = options.rules.lengthOf || {};
-    this._numberOfEntities = options.numberOfEntitiesToGenerate || 30;
+    this._numberOfEntities = options.defaultLengthOfEntitySets || 30;
     this._rootUri = options.mockDataRootURI || "";
 
     if (this._rootUri.substr(this._rootUri.length - 1) !== "/") {
