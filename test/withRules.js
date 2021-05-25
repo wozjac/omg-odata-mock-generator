@@ -7,7 +7,7 @@ const metadataXml = readFileSync("test/support/fixtures/metadata.xml").toString(
 describe("ODataMockGenerator - generating with rules", () => {
   it("skips creation of entity sets, which are passed in the option", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 5,
+      defaultLengthOfEntitySets: 5,
       rules: {
         skipMockGeneration: ["ProductDetails", "Advertisements"]
       }
@@ -27,7 +27,7 @@ describe("ODataMockGenerator - generating with rules", () => {
 
   it("creates different number of entities for configured entity sets", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 5,
+      defaultLengthOfEntitySets: 5,
       rules: {
         lengthOf: {
           Products: 2,
@@ -49,7 +49,7 @@ describe("ODataMockGenerator - generating with rules", () => {
 
   it("creates data with predefined values", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 40,
+      defaultLengthOfEntitySets: 40,
       skipMockGeneration: [
         "ProductDetails",
         "Advertisements",
@@ -78,7 +78,7 @@ describe("ODataMockGenerator - generating with rules", () => {
 
   it("creates data with predefined and related values for properties", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 40,
+      defaultLengthOfEntitySets: 40,
       rules: {
         skipMockGeneration: [
           "ProductDetails",
@@ -121,7 +121,7 @@ describe("ODataMockGenerator - generating with rules", () => {
 
   it("creates data with predefined and related values using variables", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 40,
+      defaultLengthOfEntitySets: 40,
       rules: {
         skipMockGeneration: [
           "ProductDetails",
@@ -169,7 +169,7 @@ describe("ODataMockGenerator - generating with rules", () => {
 
   it("creates distinct values for given entity sets", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 40,
+      defaultLengthOfEntitySets: 40,
       rules: {
         distinctValues: ["Categories"],
         skipMockGeneration: [

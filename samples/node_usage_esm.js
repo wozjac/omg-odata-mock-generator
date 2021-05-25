@@ -11,7 +11,7 @@ function run() {
   const metadata = getMetadata();
 
   const options = {
-    numberOfEntitiesToGenerate: 3,
+    defaultLengthOfEntitySets: 3,
     mockDataRootURI: "my/path",
     rules: {
       skipMockGeneration: ["Persons", "Suppliers"],

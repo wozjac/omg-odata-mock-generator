@@ -52,7 +52,7 @@ const mockData = generator.createMockData();
 Options parameter structure is as follows: 
 ```javascript
 { 
-  numberOfEntitiesToGenerate: <number>, // default 30
+  defaultLengthOfEntitySets: <number>, // default 30
   mockDataRootURI: <root uri for entity URIs>, // default ""
   rules: {
     predefined: { <configuration for predefined values> }, // default empty
@@ -93,11 +93,11 @@ will generate 30 entries for each entity set
 See [samples/generatedDataSample.json](./samples/generatedDataSample.json)
 
 ### Setting number of entities
-*numberOfEntitiesToGenerate* sets the global, default number of generated entries; this can be overwritten
+*defaultLengthOfEntitySets* sets the global, default number of generated entries; this can be overwritten
 for specific entity sets using *rules.lengthOf* option
 ```javascript
 const options = {
-  numberOfEntitiesToGenerate: 3
+  defaultLengthOfEntitySets: 3
 };
 
 const generator = new ODataMockGenerator(metadata, options)
@@ -106,7 +106,7 @@ const mockData = generator.createMockData();
 Each entity set will have 3 entries. Setting generation of 2 entries for Products, 12 for Categories:
 ```javascript
 const options = {
-  numberOfEntitiesToGenerate: 3,
+  defaultLengthOfEntitySets: 3,
   rules: {
     lengthOf: {
       Products: 2,
@@ -119,7 +119,7 @@ const options = {
 ### Setting the root URI
 ```javascript
 const options = {
-  numberOfEntitiesToGenerate: 3,
+  defaultLengthOfEntitySets: 3,
   mockDataRootURI: "my/path"
 };
 

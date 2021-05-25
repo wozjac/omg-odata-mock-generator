@@ -7,7 +7,7 @@ const metadataXml = readFileSync("test/support/fixtures/metadataRefConstraints.x
 describe("ODataMockGenerator - generation based on metadata with referential constraints", () => {
   it("creates correct IDs in properties, which are in referential constraints", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 10,
+      defaultLengthOfEntitySets: 10,
       skipMockGeneration: [
         "MainCategories",
         "SubCategories",
@@ -40,7 +40,7 @@ describe("ODataMockGenerator - generation based on metadata with referential con
 
   it("creates data with predefined, distinct values; entity sets have correct IDs and URIs", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 10,
+      defaultLengthOfEntitySets: 10,
       skipMockGeneration: [
         "MainCategories",
         "SubCategories",

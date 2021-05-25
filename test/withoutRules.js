@@ -6,7 +6,7 @@ const metadataXml = readFileSync("test/support/fixtures/metadata.xml").toString(
 
 describe("ODataMockGenerator - generating without rules", () => {
   it("creates expected number of entites", () => {
-    const generator = new ODataMockGenerator(metadataXml, { numberOfEntitiesToGenerate: 5 });
+    const generator = new ODataMockGenerator(metadataXml, { defaultLengthOfEntitySets: 5 });
     const mockData = generator.createMockData();
 
     expect(mockData).not.to.be.null;
@@ -19,7 +19,7 @@ describe("ODataMockGenerator - generating without rules", () => {
   });
 
   it("fills entity properties and navigation links", () => {
-    const generator = new ODataMockGenerator(metadataXml, { numberOfEntitiesToGenerate: 1 });
+    const generator = new ODataMockGenerator(metadataXml, { defaultLengthOfEntitySets: 1 });
     const mockData = generator.createMockData();
     expect(mockData.Products).has.length(1);
 
@@ -59,7 +59,7 @@ describe("ODataMockGenerator - generating without rules", () => {
 
   it("sets the correct root URI in the paths", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 1,
+      defaultLengthOfEntitySets: 1,
       mockDataRootURI: "my/path"
     });
 

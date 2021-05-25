@@ -7,7 +7,7 @@ const metadataXml = readFileSync("test/support/fixtures/metadataRefConstraints.x
 describe("ODataMockGenerator - generating with faker", () => {
   it("throws an error if faker method could not be called", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 5,
+      defaultLengthOfEntitySets: 5,
       rules: {
         faker: {
           Supplier: {
@@ -22,7 +22,7 @@ describe("ODataMockGenerator - generating with faker", () => {
 
   it("generates faker data for given properties; limits the values if MaxLength is present", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 5,
+      defaultLengthOfEntitySets: 5,
       rules: {
         faker: {
           Supplier: {
@@ -43,7 +43,7 @@ describe("ODataMockGenerator - generating with faker", () => {
 
   it("generates faker data using Mustache template style", () => {
     const generator = new ODataMockGenerator(metadataXml, {
-      numberOfEntitiesToGenerate: 5,
+      defaultLengthOfEntitySets: 5,
       rules: {
         faker: {
           Supplier: {
