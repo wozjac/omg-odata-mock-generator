@@ -28,12 +28,13 @@
     "coverage": "c8 npm test",
     "coveralls": "c8 npm test && c8 report --reporter=text-lcov | coveralls",
     "lint": "eslint -c config/.eslintrc.json src/**.*js",
-    "build-docs": "jsdoc -c config/.jsdoc_default.json src README.md",
     "pretest": "npm run lint",
     "test": "mocha",
-    "prebuild": "npm test",
     "rollup": "rollup -c config/rollup.config.js && rollup -c config/rollup.config.env.js",
-    "build": "npm run rollup && npm run build-docs",
+    "build-docs": "jsdoc -c config/.jsdoc_default.json src README.md",
+    "build-src": "npm run rollup",
+    "prebuild": "npm test",
+    "build": "npm run build-src && npm run build-docs",
     "release": "standard-version"
   },
   "dependencies": {
