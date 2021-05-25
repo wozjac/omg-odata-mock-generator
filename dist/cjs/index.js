@@ -327,7 +327,7 @@ class ODataMockGenerator {
             return variable;
           }
         } else {
-          throw `Variable ${propertyConfig} not found`;
+          throw new Error(`Variable ${propertyConfig} not found`);
         }
       } else {
         //dependent?
