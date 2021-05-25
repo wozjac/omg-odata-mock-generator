@@ -88,17 +88,19 @@ describe("ODataMockGenerator - generating without rules", () => {
     });
   });
 
-  it("limits the data if MaxLength property is present", () => {
+  it("limits the data if MaxLength property is present; leaves standard one if not", () => {
     const generator = new ODataMockGenerator(metadataXml);
     const mockData = generator.createMockData();
 
     expect(mockData.Products).to.have.lengthOf(30);
 
-    for (let i = 0; i <= mockData.Products; i++) {
-      if (i < 10) {
+    for (let i = 0; i <= mockData.Products.length - 1; i++) {
+      if (i < 9) {
         expect(mockData.Products[i].Code).to.match(/Co \d{1}/);
+        expect(mockData.Products[i].Description).to.match(/Description \d{1}/);
       } else {
         expect(mockData.Products[i].Code).to.match(/C \d{2}/);
+        expect(mockData.Products[i].Description).to.match(/Description \d{2}/);
       }
     }
   });

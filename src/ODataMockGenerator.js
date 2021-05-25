@@ -406,7 +406,7 @@ export class ODataMockGenerator {
         let value = property.name + " " + iIndex;
 
         if (property.maxLength) {
-          value = property.name.substring(0, property.maxLength - iIndex + 1);
+          value = property.name.substring(0, property.maxLength - iIndex.toString().length - 1) + " " + iIndex;
         }
 
         return value;
