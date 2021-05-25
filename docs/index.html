@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <title>JSDoc: Home</title>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
 
-  <script src="scripts/prettify/prettify.js"> </script>
-  <script src="scripts/prettify/lang-css.js"> </script>
-  <!--[if lt IE 9]>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <link type="text/css"
-    rel="stylesheet"
-    href="styles/prettify-tomorrow.css">
-  <link type="text/css"
-    rel="stylesheet"
-    href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
 </head>
 
 <body>
 
-  <div id="main">
+<div id="main">
 
     <h1 class="page-title">Home</h1>
 
+    
 
 
 
-
-
+    
 
 
     <h3> </h3>
@@ -42,64 +37,59 @@
 
 
 
-
+    
 
 
 
 
     <section>
-      <article>
-        <p><a href="https://travis-ci.com/wozjac/omg-odata-mock-generator"><img src="https://travis-ci.com/wozjac/omg-odata-mock-generator.svg?branch=main"
-              alt="Build Status"></a>
-          <img src="https://img.shields.io/david/wozjac/omg-odata-mock-generator"
-            alt="David">
-          <img src="https://img.shields.io/david/dev/wozjac/omg-odata-mock-generator"
-            alt="David">
-          <a href="https://coveralls.io/github/wozjac/omg-odata-mock-generator?branch=main"><img src="https://coveralls.io/repos/github/wozjac/omg-odata-mock-generator/badge.svg?branch=main"
-              alt="Coverage Status"></a></p>
-        <h1>OMG - OData Mock (data) Generator</h1>
-        <h2>Overview</h2>
-        <p>Generates random mock data for entities described in the OData metadata document.
-          Based on the code from <a href="https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer">OpenUI5 Mock Server</a>, but has additional features for influencing the result:</p>
-        <ul>
-          <li>use faker.js API methods for data generation</li>
-          <li>generate specific number of entities for given entity sets</li>
-          <li>skip generation of Entitiy Sets you don't need</li>
-          <li>provide sets of values, which should be used instead of pure random values</li>
-          <li>more meanigful and related data - values from one property can have a specific value based on a value from another property, which helps with building navigations</li>
-          <li>force to have only distinct entries within an Entity Set (based on key properties)</li>
-        </ul>
-        <h2>Installation</h2>
-        <h3>Node</h3>
-        <p>npm install omg-odata-mock-generator</p>
-        <h4>ES modules</h4>
-        <pre class="prettyprint source lang-javascript"><code>import { ODataMockGenerator } from &quot;omg-odata-mock-generator&quot;;
+        <article><p><a href="https://travis-ci.com/wozjac/omg-odata-mock-generator"><img src="https://travis-ci.com/wozjac/omg-odata-mock-generator.svg?branch=main" alt="Build Status"></a>
+<img src="https://img.shields.io/david/wozjac/omg-odata-mock-generator" alt="David">
+<img src="https://img.shields.io/david/dev/wozjac/omg-odata-mock-generator" alt="David">
+<a href="https://coveralls.io/github/wozjac/omg-odata-mock-generator?branch=main"><img src="https://coveralls.io/repos/github/wozjac/omg-odata-mock-generator/badge.svg?branch=main" alt="Coverage Status"></a></p>
+<h1>OMG - OData Mock (data) Generator</h1>
+<h2>Overview</h2>
+<p>Generates random mock data for entities described in the OData metadata document.
+Based on the code from <a href="https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer">OpenUI5 Mock Server</a>, but has additional features for influencing the result:</p>
+<ul>
+<li>use faker.js API methods for data generation</li>
+<li>generate specific number of entities for given entity sets</li>
+<li>skip generation of Entitiy Sets you don't need</li>
+<li>provide sets of values, which should be used instead of pure random values</li>
+<li>more meanigful and related data - values from one property can have a specific value based on a value from another property, which helps with building navigations</li>
+<li>force to have only distinct entries within an Entity Set (based on key properties)</li>
+</ul>
+<h2>Installation</h2>
+<h3>Node</h3>
+<p>npm install omg-odata-mock-generator</p>
+<h4>ES modules</h4>
+<pre class="prettyprint source lang-javascript"><code>import { ODataMockGenerator } from &quot;omg-odata-mock-generator&quot;;
 // ... prepare metadata and options
 const generator = new ODataMockGenerator(metadata, options);
 </code></pre>
-        <p>See <a href="./samples/node_usage_esm.js">samples/node_usage_esm.js</a></p>
-        <h4>CommonJS</h4>
-        <pre class="prettyprint source lang-javascript"><code>const { ODataMockGenerator } = require(&quot;omg-odata-mock-generator/dist/cjs&quot;)
+<p>See <a href="./samples/node_usage_esm.js">samples/node_usage_esm.js</a></p>
+<h4>CommonJS</h4>
+<pre class="prettyprint source lang-javascript"><code>const { ODataMockGenerator } = require(&quot;omg-odata-mock-generator/dist/cjs&quot;)
 // prepare metadata and options
 const generator = new ODataMockGenerator(metadata, options);  
 </code></pre>
-        <p>See <a href="./samples/node_usage_cjs.js">samples/node_usage_cjs.js</a></p>
-        <h3>Browser</h3>
-        <p>Use dist/preset-env/bundle.umd.js; jQuery is required. See <a href="./samples/browser_usage.html">samples/browser_usage.html</a></p>
-        <h2>API</h2>
-        <p>Check the <a href="https://wozjac.github.io/omg-odata-mock-generator/">docs</a></p>
-        <h2>Usage</h2>
-        <p>The samples below are based on modules.</p>
-        <pre class="prettyprint source lang-javascript"><code>import { ODataMockGenerator } from &quot;omg-odata-mock-generator&quot;; //or require(&quot;omg-odata-mock-generator&quot;)
+<p>See <a href="./samples/node_usage_cjs.js">samples/node_usage_cjs.js</a></p>
+<h3>Browser</h3>
+<p>Use dist/preset-env/bundle.umd.js; jQuery is required. See <a href="./samples/browser_usage.html">samples/browser_usage.html</a></p>
+<h2>API</h2>
+<p>Check the <a href="https://wozjac.github.io/omg-odata-mock-generator/">docs</a></p>
+<h2>Usage</h2>
+<p>The samples below are based on modules.</p>
+<pre class="prettyprint source lang-javascript"><code>import { ODataMockGenerator } from &quot;omg-odata-mock-generator&quot;; //or require(&quot;omg-odata-mock-generator&quot;)
 const generator = new ODataMockGenerator(metadataAsString, options);
 const mockData = generator.createMockData();
 </code></pre>
-        <ul>
-          <li><em>metadataAsString</em> is an OData metadata XML document</li>
-          <li><em>options</em> - an optional parameter for fine-tuning the generation process. If not provided, defaults are used.</li>
-        </ul>
-        <p>Options parameter structure is as follows:</p>
-        <pre class="prettyprint source lang-javascript"><code>{ 
+<ul>
+<li><em>metadataAsString</em> is an OData metadata XML document</li>
+<li><em>options</em> - an optional parameter for fine-tuning the generation process. If not provided, defaults are used.</li>
+</ul>
+<p>Options parameter structure is as follows:</p>
+<pre class="prettyprint source lang-javascript"><code>{ 
   defaultLengthOfEntitySets: &lt;number>, // default 30
   mockDataRootURI: &lt;root uri for entity URIs>, // default &quot;&quot;
   rules: {
@@ -112,14 +102,14 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <p>Please also refer to <a href="https://wozjac.github.io/omg-odata-mock-generator/">docs</a></p>
-        <h3>Default generation</h3>
-        <p><strong>Note</strong>: assuming <em>metadata</em> is https://services.odata.org/V3/OData/OData.svc/$metadata</p>
-        <pre class="prettyprint source lang-javascript"><code>const generator = new ODataMockGenerator(metadata)
+<p>Please also refer to <a href="https://wozjac.github.io/omg-odata-mock-generator/">docs</a></p>
+<h3>Default generation</h3>
+<p><strong>Note</strong>: assuming <em>metadata</em> is https://services.odata.org/V3/OData/OData.svc/$metadata</p>
+<pre class="prettyprint source lang-javascript"><code>const generator = new ODataMockGenerator(metadata)
 const mockData = generator.createMockData();
 </code></pre>
-        <p>will generate 30 entries for each entity set</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<p>will generate 30 entries for each entity set</p>
+<pre class="prettyprint source lang-javascript"><code>{
   &quot;Products&quot;: [ 
     { 
       &quot;ID&quot;: 9,
@@ -135,20 +125,20 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <p>See <a href="./samples/generatedDataSample.json">samples/generatedDataSample.json</a></p>
-        <h3>Setting number of entities</h3>
-        <p><em>numberOfEntitiesToGenerate</em> sets the global, default number of generated entries; this can be overwritten
-          for specific entity sets using <em>rules.lengthOf</em> option</p>
-        <pre class="prettyprint source lang-javascript"><code>const options = {
-  numberOfEntitiesToGenerate: 3
+<p>See <a href="./samples/generatedDataSample.json">samples/generatedDataSample.json</a></p>
+<h3>Setting number of entities</h3>
+<p><em>defaultLengthOfEntitySets</em> sets the global, default number of generated entries; this can be overwritten
+for specific entity sets using <em>rules.lengthOf</em> option</p>
+<pre class="prettyprint source lang-javascript"><code>const options = {
+  defaultLengthOfEntitySets: 3
 };
 
 const generator = new ODataMockGenerator(metadata, options)
 const mockData = generator.createMockData();
 </code></pre>
-        <p>Each entity set will have 3 entries. Setting generation of 2 entries for Products, 12 for Categories:</p>
-        <pre class="prettyprint source lang-javascript"><code>const options = {
-  numberOfEntitiesToGenerate: 3,
+<p>Each entity set will have 3 entries. Setting generation of 2 entries for Products, 12 for Categories:</p>
+<pre class="prettyprint source lang-javascript"><code>const options = {
+  defaultLengthOfEntitySets: 3,
   rules: {
     lengthOf: {
       Products: 2,
@@ -157,41 +147,41 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <h3>Setting the root URI</h3>
-        <pre class="prettyprint source lang-javascript"><code>const options = {
-  numberOfEntitiesToGenerate: 3,
+<h3>Setting the root URI</h3>
+<pre class="prettyprint source lang-javascript"><code>const options = {
+  defaultLengthOfEntitySets: 3,
   mockDataRootURI: &quot;my/path&quot;
 };
 
 const generator = new ODataMockGenerator(metadata, options)
 const mockData = generator.createMockData();
 </code></pre>
-        <p>URI in <em>__metadata</em> will be prefixed:</p>
-        <pre class="prettyprint source lang-javascript"><code>&quot;ProductDetails&quot;: [{
+<p>URI in <em>__metadata</em> will be prefixed:</p>
+<pre class="prettyprint source lang-javascript"><code>&quot;ProductDetails&quot;: [{
     &quot;ProductID&quot;: 6671,
     &quot;Details&quot;: &quot;Details 1&quot;,
     &quot;__metadata&quot;: { &quot;uri&quot;: &quot;my/path/ProductDetails(6671)&quot;, &quot;type&quot;: &quot;ODataDemo.ProductDetail&quot; },
     // ...
 </code></pre>
-        <h3>Skipping mock data generation for entity sets</h3>
-        <pre class="prettyprint source lang-javascript"><code>{
+<h3>Skipping mock data generation for entity sets</h3>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     skipMockGeneration: [&quot;EntitySet1&quot;, &quot;EntitySet2&quot;]
   }
 }
 </code></pre>
-        <p>For example:</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<p>For example:</p>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     skipMockGeneration: [&quot;Persons&quot;, &quot;Suppliers&quot;]
   }
 }
 </code></pre>
-        <h3>Using faker.js</h3>
-        <p>Faker.js <a href="https://marak.github.io/faker.js/#toc5__anchor">API methods</a> can be provided and they will be used
-          instead of default logic for data generation. If the string property has *MaxLength&quot; attribute, generated value
-          will be limited accordingly.</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<h3>Using faker.js</h3>
+<p>Faker.js <a href="https://marak.github.io/faker.js/#toc5__anchor">API methods</a> can be provided and they will be used
+instead of default logic for data generation. If the string property has *MaxLength&quot; attribute, generated value
+will be limited accordingly.</p>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     predefined: {
       Entity: {
@@ -201,8 +191,8 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <p>For example:</p>
-        <pre class="prettyprint source lang-javascript"><code>const options = {
+<p>For example:</p>
+<pre class="prettyprint source lang-javascript"><code>const options = {
   rules: {
     faker: {
       Product: {
@@ -212,9 +202,9 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <h3>Predefined values</h3>
-        <p>If for some entities values should be randomly selected from a predefined set, it can be configured in the following way:</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<h3>Predefined values</h3>
+<p>If for some entities values should be randomly selected from a predefined set, it can be configured in the following way:</p>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     predefined: {
       Entity: {
@@ -224,8 +214,8 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <p>For example:</p>
-        <pre class="prettyprint source lang-javascript"><code>const options = {
+<p>For example:</p>
+<pre class="prettyprint source lang-javascript"><code>const options = {
   rules: {
     predefined: {
       Product: {
@@ -238,8 +228,8 @@ const mockData = generator.createMockData();
 const generator = new ODataMockGenerator(metadata, options)
 const mockData = generator.createMockData();
 </code></pre>
-        <p><em>Rating</em> will be a random value but from [1,2,3] set</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<p><em>Rating</em> will be a random value but from [1,2,3] set</p>
+<pre class="prettyprint source lang-javascript"><code>{
   &quot;Products&quot;: [{
     &quot;ID&quot;: 9,
     &quot;Name&quot;: &quot;Name 1&quot;,
@@ -249,9 +239,9 @@ const mockData = generator.createMockData();
     &quot;Rating&quot;: 1
     ...
 </code></pre>
-        <h3>Predefined values based on other values</h3>
-        <p>Some values can be dependent on other values. This can be achieved in the following way:</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<h3>Predefined values based on other values</h3>
+<p>Some values can be dependent on other values. This can be achieved in the following way:</p>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     predefined: {
       Entity: {
@@ -271,8 +261,8 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <p>For example:</p>
-        <pre class="prettyprint source lang-javascript"><code>const options = {
+<p>For example:</p>
+<pre class="prettyprint source lang-javascript"><code>const options = {
   rules: {
     predefined: {
       Product: {
@@ -292,11 +282,11 @@ const mockData = generator.createMockData();
 const generator = new ODataMockGenerator(metadata, options)
 const mockData = generator.createMockData();
 </code></pre>
-        <p>Now if Rating = 1, Description will by &quot;Custom...&quot;, not the generated one.
-          Not all dependent values has to be provided - if it is not found in <em>values</em> array, it will be generated as usual.</p>
-        <h3>Reusing predefined values</h3>
-        <p>It easier to keep predefined values in one place, as they might be used in several places. It can be done with help of special <em>variables</em> property and special $ref:... handling:</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<p>Now if Rating = 1, Description will by &quot;Custom...&quot;, not the generated one.
+Not all dependent values has to be provided - if it is not found in <em>values</em> array, it will be generated as usual.</p>
+<h3>Reusing predefined values</h3>
+<p>It easier to keep predefined values in one place, as they might be used in several places. It can be done with help of special <em>variables</em> property and special $ref:... handling:</p>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     variables: {
       myValues: [value1, value2, value3]
@@ -319,8 +309,8 @@ const mockData = generator.createMockData();
   }
 }
 </code></pre>
-        <p>For example</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<p>For example</p>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     variables: {
       categoryIds: [1, 2, 3]
@@ -349,18 +339,18 @@ const mockData = generator.createMockData();
 const generator = new ODataMockGenerator(metadata, options)
 const mockData = generator.createMockData();
 </code></pre>
-        <p><em>Name</em> will be based on <em>ID</em>, which takes values from <em>categoryIds</em> variable.</p>
-        <h3>Distinct values</h3>
-        <p>Having predefined values for entities and their key properties, duplicated entries will be present, as the generator always produces the number of entries specified by the <em>mockDataEntitySize</em>.<br>
-          To have only distinct values (based on all key properties):</p>
-        <pre class="prettyprint source lang-javascript"><code>{   
+<p><em>Name</em> will be based on <em>ID</em>, which takes values from <em>categoryIds</em> variable.</p>
+<h3>Distinct values</h3>
+<p>Having predefined values for entities and their key properties, duplicated entries will be present, as the generator always produces the number of entries specified by the <em>mockDataEntitySize</em>.<br>
+To have only distinct values (based on all key properties):</p>
+<pre class="prettyprint source lang-javascript"><code>{   
   rules: {
     &quot;distinctValues&quot;: [&quot;EnitytSet1&quot;, &quot;EntitySet2&quot;]
   }
 }
 </code></pre>
-        <p>For example</p>
-        <pre class="prettyprint source lang-javascript"><code>{
+<p>For example</p>
+<pre class="prettyprint source lang-javascript"><code>{
   rules: {
     distinctValues: [&quot;Categories&quot;],
     variables: {
@@ -390,20 +380,19 @@ const mockData = generator.createMockData();
 const generator = new ODataMockGenerator(metadata, options)
 const mockData = generator.createMockData();
 </code></pre>
-        <p>There will be max 3 entries for <em>Categories</em> entity set.</p>
-        <p>Please check the <a href="./samples/node_usage.mjs">samples/node_usage.mjs</a> to see an example with all options.</p>
-        <h2>Changelog</h2>
-        <p>See CHANGELOG.md</p>
-        <h2>License</h2>
-        <p>This plugin is licensed under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
-        <h2>Author</h2>
-        <p>Feel free to contact me:</p>
-        <ul>
-          <li>wozjac@zoho.com</li>
-          <li>Twitter (https://twitter.com/jacekwoz)</li>
-          <li>LinkedIn (https://www.linkedin.com/in/jacek-wznk)</li>
-        </ul>
-      </article>
+<p>There will be max 3 entries for <em>Categories</em> entity set.</p>
+<p>Please check the <a href="./samples/node_usage.mjs">samples/node_usage.mjs</a> to see an example with all options.</p>
+<h2>Changelog</h2>
+<p>See CHANGELOG.md</p>
+<h2>License</h2>
+<p>This plugin is licensed under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+<h2>Author</h2>
+<p>Feel free to contact me:</p>
+<ul>
+<li>wozjac@zoho.com</li>
+<li>Twitter (https://twitter.com/jacekwoz)</li>
+<li>LinkedIn (https://www.linkedin.com/in/jacek-wznk)</li>
+</ul></article>
     </section>
 
 
@@ -411,27 +400,19 @@ const mockData = generator.createMockData();
 
 
 
-  </div>
+</div>
 
-  <nav>
-    <h2><a href="index.html">Home</a></h2>
-    <h3>Classes</h3>
-    <ul>
-      <li><a href="ODataMockGenerator.html">ODataMockGenerator</a></li>
-    </ul>
-  </nav>
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ODataMockGenerator.html">ODataMockGenerator</a></li></ul>
+</nav>
 
-  <br class="clear">
+<br class="clear">
 
-  <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue May 25 2021 09:44:03 GMT+0200 (Central European Summer Time)
-  </footer>
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue May 25 2021 16:05:30 GMT+0200 (Central European Summer Time)
+</footer>
 
-  <script>
-    prettyPrint();
-
-  </script>
-  <script src="scripts/linenumber.js"> </script>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
 </body>
-
 </html>
