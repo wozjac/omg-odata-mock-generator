@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
 describe("ODataMockGenerator errors", () => {
-  it("throws an error if metadata are not provided", () => {
+  it("throws an error if metadata is not provided", () => {
     expect((() => { new ODataMockGenerator(); })).to.throw("metadata not provided");
   });
 
@@ -12,6 +12,6 @@ describe("ODataMockGenerator errors", () => {
     <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="ODataDemo">
     <EntityType Name="Product"`;
 
-    expect((() => { new ODataMockGenerator(invalidXml); })).to.throw("Metadata parsing error");
+    expect((() => { new ODataMockGenerator(invalidXml); })).to.throw("Metadata XML parsing error - is the document correct?");
   });
 });

@@ -1,13 +1,14 @@
 import commonjs from "@rollup/plugin-commonjs";
 import { babel } from "@rollup/plugin-babel";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { terser } from "rollup-plugin-terser";
 
 const input = ["src/ODataMockGenerator.js"];
 
 export default [{
   input,
-  external: ["jquery", "faker"],
   plugins: [
+    nodeResolve(),
     commonjs(),
     babel({
       presets: [
@@ -31,10 +32,6 @@ export default [{
     esModule: false,
     exports: "named",
     sourcemap: true,
-    file: "dist/preset-env/bundle.min.js",
-    globals: {
-      jquery: "jQuery",
-      faker: "faker"
-    }
+    file: "dist/preset-env/bundle.min.js"
   }]
 }];
