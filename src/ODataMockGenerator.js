@@ -26,6 +26,7 @@
 //! Licensed under the Apache License, Version 2.0 - see https://github.com/SAP/openui5/blob/master/LICENSE.txt.
 
 import faker from "faker";
+import { parseXML } from "./xmlParser.js";
 
 /**
  * OData Mock Data Generator
@@ -79,7 +80,7 @@ export class ODataMockGenerator {
    * @returns {Object} Generated data in form { EntitySet1: [{ ..properties.. }], EntitySet2: [{ .. properties.. }] }
    */
   createMockData() {
-    const entitySets = this._findEntitySets(this._oMetadata);
+    const entitySets = this._findEntitySets();
     const entitySetNames = Object.keys(entitySets);
 
     //exclude adjustments
@@ -92,32 +93,34 @@ export class ODataMockGenerator {
       }
     });
 
-    this._findEntityTypes(this._oMetadata);
-    this._generateMockdata(entitySets, this._oMetadata);
+    this._findEntityTypes();
+    this._generateMockdata(entitySets);
 
     return this._oMockdata;
   }
 
   _prepareMetadata(metadata) {
     try {
-      this._oMetadata = jQuery.parseXML(metadata);
+      this._oMetadata = parseXML(metadata);
     } catch (error) {
-      throw new Error(`Metadata parsing error: ${error}`);
+      throw new Error("Metadata XML parsing error - is the document correct?");
     }
   }
 
-  _generateMockdata(mEntitySets, oMetadata) {
+  _generateMockdata(mEntitySets) {
     const oMockData = {};
     const sRootUri = this._getRootUri();
 
-    jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
+    for (const sEntitySetName in mEntitySets) {
       const mEntitySet = {};
+      const oEntitySet = mEntitySets[sEntitySetName];
       mEntitySet[oEntitySet.name] = oEntitySet;
-      oMockData[sEntitySetName] = this._generateODataMockdataForEntitySet(mEntitySet, oMetadata)[sEntitySetName];
-    });
+      oMockData[sEntitySetName] = this._generateODataMockdataForEntitySet(mEntitySet)[sEntitySetName];
+    }
 
     // changing the values if there is a referential constraint
-    jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
+    for (const sEntitySetName in mEntitySets) {
+      const oEntitySet = mEntitySets[sEntitySetName];
       for (const navprop in oEntitySet.navprops) {
         const oNavProp = oEntitySet.navprops[navprop];
         const iPropRefLength = oNavProp.from.propRef.length;
@@ -136,100 +139,115 @@ export class ODataMockGenerator {
           }
         }
       }
-    });
+    }
 
     // set URIs 
-    jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
-      jQuery.each(oMockData[sEntitySetName], (iIndex, oEntry) => {
+    for (const sEntitySetName in mEntitySets) {
+      const oEntitySet = mEntitySets[sEntitySetName];
+      oMockData[sEntitySetName].forEach((oEntry) => {
         // add the metadata for the entry
         oEntry.__metadata = {
           uri: sRootUri + sEntitySetName + "(" + this._createKeysString(oEntitySet, oEntry) + ")",
           type: oEntitySet.schema + "." + oEntitySet.type
         };
         // add the navigation properties
-        jQuery.each(oEntitySet.navprops, (sKey) => {
+        for (const sKey in oEntitySet.navprops) {
           oEntry[sKey] = {
             __deferred: {
               uri: sRootUri + sEntitySetName + "(" + this._createKeysString(oEntitySet, oEntry) + ")/" + sKey
             }
           };
-        });
+        }
       });
-    });
+    }
 
     this._oMockdata = oMockData;
   }
 
-  _generateODataMockdataForEntitySet(mEntitySets, oMetadata) {
+  _generateODataMockdataForEntitySet(mEntitySets) {
     // load the entity sets (map the entity type data to the entity set)
     const oMockData = {};
 
     // here we need to analyse the EDMX and identify the entity types and complex types
-    const mEntityTypes = this._findEntityTypes(oMetadata);
-    const mComplexTypes = this._findComplexTypes(oMetadata);
+    const mEntityTypes = this._findEntityTypes();
+    const mComplexTypes = this._findComplexTypes();
 
-    jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
+    for (const sEntitySetName in mEntitySets) {
+      const oEntitySet = mEntitySets[sEntitySetName];
       oMockData[sEntitySetName] = this._generateDataFromEntitySet(oEntitySet, mEntityTypes, mComplexTypes);
-    });
+    }
 
     return oMockData;
   }
 
-  _findEntityTypes(oMetadata) {
+  _findEntityTypes() {
     const mEntityTypes = {};
-    jQuery(oMetadata).find("EntityType").each((iIndex, oEntityType) => {
-      const $EntityType = jQuery(oEntityType);
+    const entityTypes = this._oMetadata.getElementsByTagName("EntityType");
 
-      mEntityTypes[$EntityType.attr("Name")] = {
-        "name": $EntityType.attr("Name"),
+    for (let i = 0; i < entityTypes.length; i++) {
+      const oEntityType = entityTypes.item(i);
+
+      mEntityTypes[oEntityType.getAttribute("Name")] = {
+        "name": oEntityType.getAttribute("Name"),
         "properties": [],
         "keys": []
       };
 
-      $EntityType.find("Property").each((iIndex, oProperty) => {
-        const $Property = jQuery(oProperty);
-        const type = $Property.attr("Type");
-        mEntityTypes[$EntityType.attr("Name")].properties.push({
+      const properties = oEntityType.getElementsByTagName("Property");
+
+      // for (const property in properties) {
+      for (let i = 0; i < properties.length; i++) {
+        const oProperty = properties.item(i);
+        const type = oProperty.getAttribute("Type");
+
+        mEntityTypes[oEntityType.getAttribute("Name")].properties.push({
           "schema": type.substring(0, type.lastIndexOf(".")),
           "type": type.substring(type.lastIndexOf(".") + 1),
-          "name": $Property.attr("Name"),
-          "precision": $Property.attr("Precision"),
-          "scale": $Property.attr("Scale"),
-          "maxLength": $Property.attr("MaxLength") ? Number.parseInt($Property.attr("MaxLength")) : undefined
+          "name": oProperty.getAttribute("Name"),
+          "precision": oProperty.getAttribute("Precision"),
+          "scale": oProperty.getAttribute("Scale"),
+          "maxLength": oProperty.getAttribute("MaxLength") ? Number.parseInt(oProperty.getAttribute("MaxLength")) : undefined
         });
-      });
+      }
 
-      $EntityType.find("PropertyRef").each((iIndex, oKey) => {
-        const $Key = jQuery(oKey);
-        const sPropertyName = $Key.attr("Name");
-        mEntityTypes[$EntityType.attr("Name")].keys.push(sPropertyName);
-      });
-    });
+      const propertyRefs = oEntityType.getElementsByTagName("PropertyRef");
+
+      for (let i = 0; i < propertyRefs.length; i++) {
+        const oPropertyRef = propertyRefs.item(i);
+        const sPropertyName = oPropertyRef.getAttribute("Name");
+        mEntityTypes[oEntityType.getAttribute("Name")].keys.push(sPropertyName);
+      }
+    }
 
     return mEntityTypes;
   }
 
-  _findComplexTypes(oMetadata) {
+  _findComplexTypes() {
     const mComplexTypes = {};
-    jQuery(oMetadata).find("ComplexType").each((iIndex, oComplexType) => {
-      const $ComplexType = jQuery(oComplexType);
-      mComplexTypes[$ComplexType.attr("Name")] = {
-        "name": $ComplexType.attr("Name"),
+    const complexTypes = this._oMetadata.getElementsByTagName("ComplexType");
+
+    for (let i = 0; i < complexTypes.length; i++) {
+      const oComplexType = complexTypes.item(i);
+      mComplexTypes[oComplexType.getAttribute("Name")] = {
+        "name": oComplexType.getAttribute("Name"),
         "properties": []
       };
 
-      $ComplexType.find("Property").each((iIndex, oProperty) => {
-        const $Property = jQuery(oProperty);
-        const type = $Property.attr("Type");
-        mComplexTypes[$ComplexType.attr("Name")].properties.push({
+      const properties = oComplexType.getElementsByTagName("Property");
+
+      for (let i = 0; i < properties.length; i++) {
+        const oProperty = properties.item(i);
+        const type = oProperty.getAttribute("Type");
+
+        mComplexTypes[oComplexType.getAttribute("Name")].properties.push({
           "schema": type.substring(0, type.lastIndexOf(".")),
           "type": type.substring(type.lastIndexOf(".") + 1),
-          "name": $Property.attr("Name"),
-          "precision": $Property.attr("Precision"),
-          "scale": $Property.attr("Scale")
+          "name": oProperty.getAttribute("Name"),
+          "precision": oProperty.getAttribute("Precision"),
+          "scale": oProperty.getAttribute("Scale")
         });
-      });
-    });
+      }
+    }
 
     return mComplexTypes;
   }
@@ -490,7 +508,7 @@ export class ODataMockGenerator {
     // creates the key string for an entity
     let sKeys = "";
     if (oEntry) {
-      jQuery.each(oEntitySet.keys, (iIndex, sKey) => {
+      oEntitySet.keys.forEach((sKey) => {
         if (sKeys) {
           sKeys += ",";
         }
@@ -513,12 +531,12 @@ export class ODataMockGenerator {
     return sKeys;
   }
 
-  _findEntitySets(oMetadata) {
+  _findEntitySets() {
     const mEntitySets = {};
-    const oPrincipals = jQuery(oMetadata).find("Principal");
-    const oDependents = jQuery(oMetadata).find("Dependent");
+    const oPrincipals = jQuery(this._oMetadata).find("Principal");
+    const oDependents = jQuery(this._oMetadata).find("Dependent");
 
-    jQuery(oMetadata).find("EntitySet").each((iIndex, oEntitySet) => {
+    jQuery(this._oMetadata).find("EntitySet").each((iIndex, oEntitySet) => {
       const $EntitySet = jQuery(oEntitySet);
       // split the namespace and the name of the entity type (namespace could have dots inside)
       const aEntityTypeParts = /((.*)\.)?(.*)/.exec($EntitySet.attr("EntityType"));
@@ -567,7 +585,7 @@ export class ODataMockGenerator {
     // find the keys and the navigation properties of the entity types
     jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
       // find the keys
-      const $EntityType = jQuery(oMetadata).find("EntityType[Name='" + oEntitySet.type + "']");
+      const $EntityType = jQuery(this._oMetadata).find("EntityType[Name='" + oEntitySet.type + "']");
       const aKeys = jQuery($EntityType).find("PropertyRef");
       jQuery.each(aKeys, (iIndex, oPropRef) => {
         const sKeyName = jQuery(oPropRef).attr("Name");
@@ -575,13 +593,13 @@ export class ODataMockGenerator {
         oEntitySet.keysType[sKeyName] = jQuery($EntityType).find("Property[Name='" + sKeyName + "']").attr("Type");
       });
       // resolve the navigation properties
-      const aNavProps = jQuery(oMetadata).find("EntityType[Name='" + oEntitySet.type + "'] NavigationProperty");
+      const aNavProps = jQuery(this._oMetadata).find("EntityType[Name='" + oEntitySet.type + "'] NavigationProperty");
       jQuery.each(aNavProps, (iIndex, oNavProp) => {
         const $NavProp = jQuery(oNavProp);
         const aRelationship = $NavProp.attr("Relationship").split(".");
-        const aAssociationSet = jQuery(oMetadata).find("AssociationSet[Association = '" + aRelationship.join(".") + "']");
+        const aAssociationSet = jQuery(this._oMetadata).find("AssociationSet[Association = '" + aRelationship.join(".") + "']");
         const sName = aRelationship.pop();
-        const aAssociation = jQuery(oMetadata).find("Association[Name = '" + sName + "']");
+        const aAssociation = jQuery(this._oMetadata).find("Association[Name = '" + sName + "']");
         oEntitySet.navprops[$NavProp.attr("Name")] = {
           "name": $NavProp.attr("Name"),
           "from": fnResolveNavProp($NavProp.attr("FromRole"), aAssociation, aAssociationSet, true),
