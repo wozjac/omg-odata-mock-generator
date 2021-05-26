@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.1.3...v1.2.0) (2021-05-26)
+
+
+### Features
+
+* remove dependencies to jQuery & jsdom ([fd34b83](https://github.com/wozjac/omg-odata-mock-generator/commit/fd34b83e81db6a52452427f21a7e560922429c36))
+
 ### [1.1.3](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.1.2...v1.1.3) (2021-05-25)
 
 ### [1.1.2](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.1.1...v1.1.2) (2021-05-25)
