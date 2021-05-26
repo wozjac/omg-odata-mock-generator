@@ -2,54 +2,41 @@
 
 <head>
   <title>ODataMockGenerator in browser</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-    crossorigin="anonymous"></script>
-  </script>
-  <script src="../node_modules/faker/dist/faker.min.js"></script>
   <script src="../dist/preset-env/bundle.min.js"></script>
 
 </head>
 
 <body>
-  <p>Please note: jQuery is required not only for this page, but for ODataMockGenerator itself</p>
   <p>Generated data based on https://services.odata.org/V3/OData/OData.svc/$metadata</p>
   <div id="generatedData"></div>
 
   <script>
     var metadata;
 
-    jQuery.ajax({
-      url: "https://services.odata.org/V3/OData/OData.svc/$metadata",
-      dataType: "text",
-      async: false,
-      success: (xml) => {
-        try {
-          metadata = xml;
-        } catch (error) {
-          console.error(error);
-        }
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
+    fetch("https://services.odata.org/V3/OData/OData.svc/$metadata")
+      .then(function(response) {
+        return response.text();
+      })
+      .then(function(data) {
+        metadata = data;
 
-    var options = {
-      defaultLengthOfEntitySets: 5,
-      rules: {
-        faker: {
-          Product: {
-            Name: "commerce.productName",
-            Description: "lorem.paragraph"
+        var options = {
+          defaultLengthOfEntitySets: 5,
+          rules: {
+            faker: {
+              Product: {
+                Name: "commerce.productName",
+                Description: "lorem.paragraph"
+              }
+            }
           }
         }
-      }
-    }
 
-    var generator = new omg.ODataMockGenerator(metadata, options);
-    var mockData = generator.createMockData();
-    jQuery("#generatedData").append("<p>" + JSON.stringify(mockData) + "</p>");
+        var generator = new omg.ODataMockGenerator(metadata, options);
+        var mockData = generator.createMockData();
+        var text = document.createElement("p");
+        document.querySelector("#generatedData").appendChild(document.createTextNode(JSON.stringify(mockData)));
+      });
 
   </script>
 </body>

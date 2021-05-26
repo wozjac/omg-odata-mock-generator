@@ -27,6 +27,8 @@
 
 import faker from "faker";
 import { parseXML } from "./xmlParser.js";
+import { DataGenerator } from "./DataGenerator.js";
+import * as metadataExtract from "./metadataExtract.js";
 
 /**
  * OData Mock Data Generator
@@ -70,8 +72,13 @@ export class ODataMockGenerator {
     }
 
     this._predefinedChosenValues = {};
+    this._dataGenerator = new DataGenerator();
 
-    this._prepareMetadata(metadata);
+    try {
+      this._metdataXMLDocument = parseXML(metadata);
+    } catch (error) {
+      throw new Error("Metadata XML parsing error - is the document correct?");
+    }
   }
 
   /**
@@ -80,7 +87,7 @@ export class ODataMockGenerator {
    * @returns {Object} Generated data in form { EntitySet1: [{ ..properties.. }], EntitySet2: [{ .. properties.. }] }
    */
   createMockData() {
-    const entitySets = this._findEntitySets();
+    const entitySets = metadataExtract.findEntitySets(this._metdataXMLDocument);
     const entitySetNames = Object.keys(entitySets);
 
     //exclude adjustments
@@ -93,18 +100,11 @@ export class ODataMockGenerator {
       }
     });
 
-    this._findEntityTypes();
+    this._mEntityTypes = metadataExtract.findEntityTypes(this._metdataXMLDocument);
+    this._mComplexTypes = metadataExtract.findComplexTypes(this._metdataXMLDocument);
     this._generateMockdata(entitySets);
 
     return this._oMockdata;
-  }
-
-  _prepareMetadata(metadata) {
-    try {
-      this._oMetadata = parseXML(metadata);
-    } catch (error) {
-      throw new Error("Metadata XML parsing error - is the document correct?");
-    }
   }
 
   _generateMockdata(mEntitySets) {
@@ -165,95 +165,18 @@ export class ODataMockGenerator {
   }
 
   _generateODataMockdataForEntitySet(mEntitySets) {
-    // load the entity sets (map the entity type data to the entity set)
     const oMockData = {};
-
-    // here we need to analyse the EDMX and identify the entity types and complex types
-    const mEntityTypes = this._findEntityTypes();
-    const mComplexTypes = this._findComplexTypes();
 
     for (const sEntitySetName in mEntitySets) {
       const oEntitySet = mEntitySets[sEntitySetName];
-      oMockData[sEntitySetName] = this._generateDataFromEntitySet(oEntitySet, mEntityTypes, mComplexTypes);
+      oMockData[sEntitySetName] = this._generateDataFromEntitySet(oEntitySet);
     }
 
     return oMockData;
   }
 
-  _findEntityTypes() {
-    const mEntityTypes = {};
-    const entityTypes = this._oMetadata.getElementsByTagName("EntityType");
-
-    for (let i = 0; i < entityTypes.length; i++) {
-      const oEntityType = entityTypes.item(i);
-
-      mEntityTypes[oEntityType.getAttribute("Name")] = {
-        "name": oEntityType.getAttribute("Name"),
-        "properties": [],
-        "keys": []
-      };
-
-      const properties = oEntityType.getElementsByTagName("Property");
-
-      // for (const property in properties) {
-      for (let i = 0; i < properties.length; i++) {
-        const oProperty = properties.item(i);
-        const type = oProperty.getAttribute("Type");
-
-        mEntityTypes[oEntityType.getAttribute("Name")].properties.push({
-          "schema": type.substring(0, type.lastIndexOf(".")),
-          "type": type.substring(type.lastIndexOf(".") + 1),
-          "name": oProperty.getAttribute("Name"),
-          "precision": oProperty.getAttribute("Precision"),
-          "scale": oProperty.getAttribute("Scale"),
-          "maxLength": oProperty.getAttribute("MaxLength") ? Number.parseInt(oProperty.getAttribute("MaxLength")) : undefined
-        });
-      }
-
-      const propertyRefs = oEntityType.getElementsByTagName("PropertyRef");
-
-      for (let i = 0; i < propertyRefs.length; i++) {
-        const oPropertyRef = propertyRefs.item(i);
-        const sPropertyName = oPropertyRef.getAttribute("Name");
-        mEntityTypes[oEntityType.getAttribute("Name")].keys.push(sPropertyName);
-      }
-    }
-
-    return mEntityTypes;
-  }
-
-  _findComplexTypes() {
-    const mComplexTypes = {};
-    const complexTypes = this._oMetadata.getElementsByTagName("ComplexType");
-
-    for (let i = 0; i < complexTypes.length; i++) {
-      const oComplexType = complexTypes.item(i);
-      mComplexTypes[oComplexType.getAttribute("Name")] = {
-        "name": oComplexType.getAttribute("Name"),
-        "properties": []
-      };
-
-      const properties = oComplexType.getElementsByTagName("Property");
-
-      for (let i = 0; i < properties.length; i++) {
-        const oProperty = properties.item(i);
-        const type = oProperty.getAttribute("Type");
-
-        mComplexTypes[oComplexType.getAttribute("Name")].properties.push({
-          "schema": type.substring(0, type.lastIndexOf(".")),
-          "type": type.substring(type.lastIndexOf(".") + 1),
-          "name": oProperty.getAttribute("Name"),
-          "precision": oProperty.getAttribute("Precision"),
-          "scale": oProperty.getAttribute("Scale")
-        });
-      }
-    }
-
-    return mComplexTypes;
-  }
-
-  _generateDataFromEntitySet(oEntitySet, mEntityTypes, mComplexTypes) {
-    const oEntityType = mEntityTypes[oEntitySet.type];
+  _generateDataFromEntitySet(oEntitySet) {
+    const oEntityType = this._mEntityTypes[oEntitySet.type];
     let aMockedEntries = [];
 
     let numberOfEntities;
@@ -265,7 +188,7 @@ export class ODataMockGenerator {
     }
 
     for (let i = 0; i < numberOfEntities; i++) {
-      aMockedEntries.push(this._generateDataFromEntity(oEntityType, i + 1, mComplexTypes));
+      aMockedEntries.push(this._generateDataFromEntity(oEntityType, i + 1));
     }
 
     if (this._distinctValues.includes(oEntitySet.name)) {
@@ -306,7 +229,7 @@ export class ODataMockGenerator {
     return unique;
   }
 
-  _generateDataFromEntity(oEntityType, iIndex, mComplexTypes) {
+  _generateDataFromEntity(oEntityType, iIndex) {
     const oEntity = {};
 
     if (!oEntityType) {
@@ -315,13 +238,13 @@ export class ODataMockGenerator {
 
     for (let i = 0; i < oEntityType.properties.length; i++) {
       const oProperty = oEntityType.properties[i];
-      oEntity[oProperty.name] = this._generatePropertyValue(oProperty, mComplexTypes, iIndex, oEntityType, oEntity);
+      oEntity[oProperty.name] = this._generatePropertyValue(oProperty, iIndex, oEntityType, oEntity);
     }
 
     return oEntity;
   }
 
-  _generatePropertyValue(property, mComplexTypes, iIndexParameter, entityType, entity) {
+  _generatePropertyValue(property, iIndexParameter, entityType, entity) {
     //already created?
     if (entity[property.name]) {
       return entity[property.name];
@@ -383,9 +306,9 @@ export class ODataMockGenerator {
             for (const i in entityType.properties) {
               if (entityType.properties[i].name === propertyConfig.reference) {
                 const emptyProperty = entityType.properties[i];
-                entity[emptyProperty.name] = this._generatePropertyValue(emptyProperty, mComplexTypes, iIndexParameter, entityType, entity);
+                entity[emptyProperty.name] = this._generatePropertyValue(emptyProperty, iIndexParameter, entityType, entity);
                 //and run again for current
-                return this._generatePropertyValue(property, mComplexTypes, iIndexParameter, entityType, entity);
+                return this._generatePropertyValue(property, iIndexParameter, entityType, entity);
               }
             }
           }
@@ -420,88 +343,19 @@ export class ODataMockGenerator {
     }
 
     //standard way - random values
-    let iIndex = iIndexParameter;
+    let index = iIndexParameter;
 
-    if (!iIndex) {
-      iIndex = Math.floor(this._getPseudoRandomNumber("String") * 10000) + 101;
+    if (!index) {
+      index = Math.floor(this._dataGenerator.getPseudoRandomNumber("String") * 10000) + 101;
     }
 
-    switch (property.type) {
-      case "String": {
-        let value = property.name + " " + iIndex;
+    let value = this._dataGenerator.generateValueForODataProperty(property, index);
 
-        if (property.maxLength) {
-          value = property.name.substring(0, property.maxLength - iIndex.toString().length - 1) + " " + iIndex;
-        }
-
-        return value;
-      }
-      case "DateTime": {
-        const date = new Date();
-        date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTime") * 20));
-        date.setDate(Math.floor(this._getPseudoRandomNumber("DateTime") * 30));
-        date.setMonth(Math.floor(this._getPseudoRandomNumber("DateTime") * 12));
-        date.setMilliseconds(0);
-        return "/Date(" + date.getTime() + ")/";
-      }
-      case "Int16":
-      case "Int32":
-      case "Int64":
-        return Math.floor(this._getPseudoRandomNumber("Int") * 10000);
-      case "Decimal":
-        return Math.floor(this._getPseudoRandomNumber("Decimal") * 1000000) / 100;
-      case "Boolean":
-        return this._getPseudoRandomNumber("Boolean") < 0.5;
-      case "Byte":
-        return Math.floor(this._getPseudoRandomNumber("Byte") * 10);
-      case "Double":
-        return this._getPseudoRandomNumber("Double") * 10;
-      case "Single":
-        return this._getPseudoRandomNumber("Single") * 1000000000;
-      case "SByte":
-        return Math.floor(this._getPseudoRandomNumber("SByte") * 10);
-      case "Time":
-        // ODataModel expects ISO8601 duration format
-        return "PT" + Math.floor(this._getPseudoRandomNumber("Time") * 23) + "H" + Math.floor(this._getPseudoRandomNumber("Time") * 59) + "M" + Math.floor(this._getPseudoRandomNumber("Time") * 59) + "S";
-      case "Guid":
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-          const r = this._getPseudoRandomNumber("Guid") * 16 | 0,
-            v = c === "x" ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        }.bind(this));
-      case "Binary": {
-        const nMask = Math.floor(-2147483648 + this._getPseudoRandomNumber("Binary") * 4294967295);
-        let sMask = "";
-        /*eslint-disable */
-        for (let nFlag = 0, nShifted = nMask; nFlag < 32; nFlag++, sMask += String(nShifted >>> 31), nShifted <<= 1)
-        ;
-
-        /*eslint-enable*/
-        return sMask;
-      }
-      case "DateTimeOffset": {
-        const date = new Date();
-        date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 20));
-        date.setDate(Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 30));
-        date.setMonth(Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 12));
-        date.setMilliseconds(0);
-        return "/Date(" + date.getTime() + "+0000)/";
-      }
-      default:
-        return this._generateDataFromEntity(mComplexTypes[property.type], iIndex, mComplexTypes);
+    if (value === null) {
+      value = this._generateDataFromEntity(this._mComplexTypes[property.type], index);
     }
-  }
 
-  _getPseudoRandomNumber(sType) {
-    if (!this._iRandomSeed) {
-      this._iRandomSeed = {};
-    }
-    //eslint-disable-next-line
-    if (!this._iRandomSeed.hasOwnProperty(sType)) {
-      this._iRandomSeed[sType] = 0;
-    }
-    this._iRandomSeed[sType] = (this._iRandomSeed[sType] + 11) * 25214903917 % 281474976710655;
-    return this._iRandomSeed[sType] / 281474976710655;
+    return value;
   }
 
   _createKeysString(oEntitySet, oEntry) {
@@ -516,7 +370,7 @@ export class ODataMockGenerator {
         if (oEntitySet.keysType[sKey] === "Edm.String") {
           oKeyValue = encodeURIComponent("'" + oKeyValue + "'");
         } else if (oEntitySet.keysType[sKey] === "Edm.DateTime") {
-          oKeyValue = this._getDateTime(oKeyValue);
+          oKeyValue = this._dataGenerator.getDateTime(oKeyValue);
           oKeyValue = encodeURIComponent(oKeyValue);
         } else if (oEntitySet.keysType[sKey] === "Edm.Guid") {
           oKeyValue = "guid'" + oKeyValue + "'";
@@ -531,97 +385,9 @@ export class ODataMockGenerator {
     return sKeys;
   }
 
-  _findEntitySets() {
-    const mEntitySets = {};
-    const oPrincipals = jQuery(this._oMetadata).find("Principal");
-    const oDependents = jQuery(this._oMetadata).find("Dependent");
-
-    jQuery(this._oMetadata).find("EntitySet").each((iIndex, oEntitySet) => {
-      const $EntitySet = jQuery(oEntitySet);
-      // split the namespace and the name of the entity type (namespace could have dots inside)
-      const aEntityTypeParts = /((.*)\.)?(.*)/.exec($EntitySet.attr("EntityType"));
-      mEntitySets[$EntitySet.attr("Name")] = {
-        "name": $EntitySet.attr("Name"),
-        "schema": aEntityTypeParts[2],
-        "type": aEntityTypeParts[3],
-        "keys": [],
-        "keysType": {},
-        "navprops": {}
-      };
-    });
-
-    // helper function to find the entity set and property reference
-    // for the given role name
-    const fnResolveNavProp = function(sRole, aAssociation, aAssociationSet, bFrom) {
-      const sEntitySet = jQuery(aAssociationSet).find("End[Role='" + sRole + "']").attr("EntitySet");
-      const sMultiplicity = jQuery(aAssociation).find("End[Role='" + sRole + "']").attr("Multiplicity");
-
-      const aPropRef = [];
-      const aConstraint = jQuery(aAssociation).find("ReferentialConstraint > [Role='" + sRole + "']");
-      if (aConstraint && aConstraint.length > 0) {
-        jQuery(aConstraint[0]).children("PropertyRef").each((iIndex, oPropRef) => {
-          aPropRef.push(jQuery(oPropRef).attr("Name"));
-        });
-      } else {
-        const oPrinDeps = (bFrom) ? oPrincipals : oDependents;
-        jQuery(oPrinDeps).each((iIndex, oPrinDep) => {
-          if (sRole === (jQuery(oPrinDep).attr("Role"))) {
-            jQuery(oPrinDep).children("PropertyRef").each((iIndex, oPropRef) => {
-              aPropRef.push(jQuery(oPropRef).attr("Name"));
-            });
-            return false;
-          }
-        });
-      }
-
-      return {
-        "role": sRole,
-        "entitySet": sEntitySet,
-        "propRef": aPropRef,
-        "multiplicity": sMultiplicity
-      };
-    };
-
-    // find the keys and the navigation properties of the entity types
-    jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
-      // find the keys
-      const $EntityType = jQuery(this._oMetadata).find("EntityType[Name='" + oEntitySet.type + "']");
-      const aKeys = jQuery($EntityType).find("PropertyRef");
-      jQuery.each(aKeys, (iIndex, oPropRef) => {
-        const sKeyName = jQuery(oPropRef).attr("Name");
-        oEntitySet.keys.push(sKeyName);
-        oEntitySet.keysType[sKeyName] = jQuery($EntityType).find("Property[Name='" + sKeyName + "']").attr("Type");
-      });
-      // resolve the navigation properties
-      const aNavProps = jQuery(this._oMetadata).find("EntityType[Name='" + oEntitySet.type + "'] NavigationProperty");
-      jQuery.each(aNavProps, (iIndex, oNavProp) => {
-        const $NavProp = jQuery(oNavProp);
-        const aRelationship = $NavProp.attr("Relationship").split(".");
-        const aAssociationSet = jQuery(this._oMetadata).find("AssociationSet[Association = '" + aRelationship.join(".") + "']");
-        const sName = aRelationship.pop();
-        const aAssociation = jQuery(this._oMetadata).find("Association[Name = '" + sName + "']");
-        oEntitySet.navprops[$NavProp.attr("Name")] = {
-          "name": $NavProp.attr("Name"),
-          "from": fnResolveNavProp($NavProp.attr("FromRole"), aAssociation, aAssociationSet, true),
-          "to": fnResolveNavProp($NavProp.attr("ToRole"), aAssociation, aAssociationSet, false)
-        };
-      });
-    });
-
-    return mEntitySets;
-  }
-
   _getRootUri() {
     let sUri = this._rootUri;
     sUri = sUri && /([^?#]*)([?#].*)?/.exec(sUri)[1]; // remove URL parameters or anchors
     return sUri;
-  }
-
-  _getDateTime(sString) {
-    if (!sString) {
-      return;
-    }
-
-    return "datetime'" + new Date(Number(sString.replace("/Date(", "").replace(")/", ""))).toJSON().substring(0, 19) + "'";
   }
 }

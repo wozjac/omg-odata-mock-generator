@@ -1,8 +1,4 @@
 import { expect } from "chai";
-import { JSDOM } from "jsdom";
-import _jQuery from "jquery";
-const { window } = new JSDOM("");
-global.jQuery = _jQuery(window);
 import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
 describe("ODataMockGenerator - defaults", () => {
