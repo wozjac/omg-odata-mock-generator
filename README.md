@@ -7,7 +7,7 @@
 
 ## Overview
 Generates random mock data for entities described in the OData metadata document.
-Based on the code from [OpenUI5 Mock Server](https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer), but has additional features for influencing the result:  
+Based on the code from [OpenUI5 Mock Server](https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer), but has additional features:  
 - use faker.js API methods for data generation
 - generate specific number of entities for given entity sets
 - skip generation of Entitiy Sets you don't need  
@@ -158,9 +158,10 @@ If the string property has *MaxLength" attribute, generated value will be limite
 ```javascript
 {
   rules: {
-    predefined: {
+    faker: {
       Entity: {
-        Property: [Value1, Value2, Value3]
+        Property1: "faker.method",
+        Property2: "{{faker.method}}, {{faker.method}}"
       }
     }
   }
