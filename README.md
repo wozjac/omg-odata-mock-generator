@@ -92,7 +92,7 @@ will generate 30 entries for each entity set
 ```
 See [samples/generatedDataSample.json](./samples/generatedDataSample.json)
 
-### Setting number of entities
+### Setting number of generated entities
 *defaultLengthOfEntitySets* sets the global, default number of generated entries; this can be overwritten
 for specific entity sets using *rules.lengthOf* option
 ```javascript
