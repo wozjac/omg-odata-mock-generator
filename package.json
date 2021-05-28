@@ -32,9 +32,9 @@
     "test": "mocha",
     "rollup": "rollup -c config/rollup.config.js && rollup -c config/rollup.config.env.js",
     "build-docs": "jsdoc -c config/.jsdoc_default.json src README.md",
-    "build-src": "npm run rollup",
+    "build": "npm run rollup",
     "prebuild": "npm test",
-    "build": "npm run build-src && npm run build-docs",
+    "prerelease": "npm run build && git add -f dist/",
     "release": "standard-version"
   },
   "devDependencies": {

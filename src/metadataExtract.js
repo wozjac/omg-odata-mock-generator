@@ -173,12 +173,11 @@ export function findEntitySets(metdataXMLDocument) {
           for (let k = 0; k < children.length; k++) {
             const propertyRef = children[k];
 
-            if (propertyRef.name === "PropertyRef") {
+            if (propertyRef.tagName === "PropertyRef") {
               foundPropertyRefs.push(propertyRef.getAttribute("Name"));
+              break;
             }
           }
-
-          return false;
         }
       }
     }

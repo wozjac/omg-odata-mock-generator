@@ -350,10 +350,7 @@ export class ODataMockGenerator {
 
         return generatedValue;
       } catch (error) {
-        throw new Error(`
-                    faker.js call error, check the config
-                    for $ { entityType.name }
-                    /${property.name}`);
+        throw new Error(`faker.js call error, check the config for ${entityType.name}/${property.name}`);
       }
     }
 

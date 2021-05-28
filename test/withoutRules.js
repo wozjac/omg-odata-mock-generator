@@ -3,6 +3,7 @@ import { readFileSync } from "fs";
 import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
 const metadataXml = readFileSync("test/support/fixtures/metadata.xml").toString();
+const metadataV3Xml = readFileSync("test/support/fixtures/metadataV3.xml").toString();
 
 describe("ODataMockGenerator - generating without rules", () => {
   it("creates expected number of entites", () => {
@@ -102,6 +103,15 @@ describe("ODataMockGenerator - generating without rules", () => {
         expect(mockData.Products[i].Code).to.match(/C \d{2}/);
         expect(mockData.Products[i].Description).to.match(/Description \d{2}/);
       }
+    }
+  });
+
+  it("generates V3 data", () => {
+    const generator = new ODataMockGenerator(metadataV3Xml);
+    const mockData = generator.createMockData();
+
+    for (const entity in mockData) {
+      expect(mockData[entity]).to.have.lengthOf(30);
     }
   });
 });
