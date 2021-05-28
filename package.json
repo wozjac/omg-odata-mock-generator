@@ -1,6 +1,6 @@
 {
   "name": "omg-odata-mock-generator",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Configurable data generator for OData metadata",
   "type": "module",
   "main": "dist/esm/bundle.js",
@@ -34,8 +34,8 @@
     "build-docs": "jsdoc -c config/.jsdoc_default.json src README.md",
     "build": "npm run rollup",
     "prebuild": "npm test",
-    "prerelease": "npm run build && git add -f dist/",
-    "release": "standard-version"
+    "release": "standard-version",
+    "publish": "git push --follow-tags origin main && npm publish"
   },
   "devDependencies": {
     "@babel/core": "^7.14.2",

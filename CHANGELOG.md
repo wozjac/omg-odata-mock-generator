@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.2.0...v1.2.1) (2021-05-28)
+
+
+### Bug Fixes
+
+* bug in prinicipal/dependent resolution ([ac02f7f](https://github.com/wozjac/omg-odata-mock-generator/commit/ac02f7f705cad4dbf57b573184ff2f741d984fa0))
+* throw a dedicated error, if an entity set entry is missing in case of following navigation related properties between entities ([eaaad31](https://github.com/wozjac/omg-odata-mock-generator/commit/eaaad31e7139a273e2ca9990f2905245f3e53fea))
+
 ## [1.2.0](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.1.3...v1.2.0) (2021-05-26)
 
 

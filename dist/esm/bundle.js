@@ -143962,12 +143962,11 @@ function findEntitySets(metdataXMLDocument) {
           for (let k = 0; k < children.length; k++) {
             const propertyRef = children[k];
 
-            if (propertyRef.name === "PropertyRef") {
+            if (propertyRef.tagName === "PropertyRef") {
               foundPropertyRefs.push(propertyRef.getAttribute("Name"));
+              break;
             }
           }
-
-          return false;
         }
       }
     }
@@ -144155,7 +144154,12 @@ class ODataMockGenerator {
       const oEntitySet = mEntitySets[sEntitySetName];
       for (const navprop in oEntitySet.navprops) {
         const oNavProp = oEntitySet.navprops[navprop];
-        const iPropRefLength = oNavProp.from.propRef.length;
+        let iPropRefLength;
+        try {
+          iPropRefLength = oNavProp.from.propRef.length;
+        } catch (error) {
+          console.log(error);
+        }
         for (let j = 0; j < iPropRefLength; j++) {
           for (let i = 0; i < oMockData[sEntitySetName].length; i++) {
             // copy the value from the principle to the dependant;
@@ -144166,7 +144170,13 @@ class ODataMockGenerator {
               const chosenValues = this._predefinedChosenValues[oNavProp.name][oNavProp.to.propRef[j]];
               oEntity[oNavProp.from.propRef[j]] = chosenValues[Math.floor(Math.random() * chosenValues.length)];
             } else {
-              oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] = oEntity[oNavProp.from.propRef[j]];
+              try {
+                oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] = oEntity[oNavProp.from.propRef[j]];
+              } catch (error) {
+                throw new Error(`Could not find a respective entry in ${oNavProp.to.entitySet} ` +
+                  `to update its value from a navigation related property ${oNavProp.from.propRef} ` +
+                  `in ${sEntitySetName}. Check it the target entity set generation is not limited or skipped`);
+              }
             }
           }
         }
@@ -144316,7 +144326,8 @@ class ODataMockGenerator {
             return variable;
           }
         } else {
-          throw new Error(`Variable ${propertyConfig} not found`);
+          throw new Error(`
+                    Variable $ { propertyConfig } not found `);
         }
       } else {
         //dependent?
