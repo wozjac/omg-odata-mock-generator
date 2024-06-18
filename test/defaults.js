@@ -15,7 +15,9 @@ describe("ODataMockGenerator - defaults", () => {
 
   it("appends / to root URI if not provided", () => {
     const sampleMetadataXml = "<xml><something></something></xml>";
-    const generator = new ODataMockGenerator(sampleMetadataXml, { mockDataRootURI: "my/path/uri" });
+    const generator = new ODataMockGenerator(sampleMetadataXml, {
+      mockDataRootURI: "my/path/uri",
+    });
 
     expect(generator._rootUri).to.equal("my/path/uri/");
   });

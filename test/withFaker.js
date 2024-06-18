@@ -2,7 +2,9 @@ import { expect } from "chai";
 import { readFileSync } from "fs";
 import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
-const metadataXml = readFileSync("test/support/fixtures/metadataRefConstraints.xml").toString();
+const metadataXml = readFileSync(
+  "test/support/fixtures/metadataRefConstraints.xml"
+).toString();
 
 describe("ODataMockGenerator - generating with faker", () => {
   it("throws an error if faker method could not be called", () => {
@@ -11,13 +13,15 @@ describe("ODataMockGenerator - generating with faker", () => {
       rules: {
         faker: {
           Supplier: {
-            Name: "some.wrong.path"
-          }
-        }
-      }
+            Name: "some.wrong.path",
+          },
+        },
+      },
     });
 
-    expect((() => { generator.createMockData(); })).to.throw("faker.js call error, check the config for Supplier/Name");
+    expect(() => {
+      generator.createMockData();
+    }).to.throw("faker.js call error, check the config for Supplier/Name");
   });
 
   it("generates faker data for given properties; limits the values if MaxLength is present", () => {
@@ -27,10 +31,10 @@ describe("ODataMockGenerator - generating with faker", () => {
         faker: {
           Supplier: {
             Name: "system.semver",
-            ContactPhone2: "lorem.paragraph"
-          }
-        }
-      }
+            ContactPhone2: "lorem.paragraph",
+          },
+        },
+      },
     });
 
     const mockData = generator.createMockData();
@@ -48,9 +52,9 @@ describe("ODataMockGenerator - generating with faker", () => {
         faker: {
           Supplier: {
             Name: "{{system.semver}} --- {{datatype.number}}",
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     const mockData = generator.createMockData();

@@ -2,15 +2,17 @@ import { expect } from "chai";
 import { readFileSync } from "fs";
 import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
-const metadataXml = readFileSync("test/support/fixtures/metadata.xml").toString();
+const metadataXml = readFileSync(
+  "test/support/fixtures/metadata.xml"
+).toString();
 
 describe("ODataMockGenerator - generating with rules", () => {
   it("skips creation of entity sets, which are passed in the option", () => {
     const generator = new ODataMockGenerator(metadataXml, {
       defaultLengthOfEntitySets: 5,
       rules: {
-        skipMockGeneration: ["ProductDetails", "Advertisements"]
-      }
+        skipMockGeneration: ["ProductDetails", "Advertisements"],
+      },
     });
 
     const mockData = generator.createMockData();
@@ -31,9 +33,9 @@ describe("ODataMockGenerator - generating with rules", () => {
       rules: {
         lengthOf: {
           Products: 2,
-          Categories: 12
-        }
-      }
+          Categories: 12,
+        },
+      },
     });
 
     const mockData = generator.createMockData();
@@ -55,15 +57,15 @@ describe("ODataMockGenerator - generating with rules", () => {
         "Advertisements",
         "Categories",
         "Persons",
-        "PersonDetails"
+        "PersonDetails",
       ],
       rules: {
         predefined: {
           Product: {
-            Rating: [1, 2, 3]
-          }
-        }
-      }
+            Rating: [1, 2, 3],
+          },
+        },
+      },
     });
 
     const mockData = generator.createMockData();
@@ -86,21 +88,23 @@ describe("ODataMockGenerator - generating with rules", () => {
           "Categories",
           "Persons",
           "PersonDetails",
-          "Suppliers"
+          "Suppliers",
         ],
         predefined: {
-          "Product": {
-            "Rating": [1, 2, 3],
-            "Description": {
-              "reference": "Rating",
-              "values": [{
-                "key": 1,
-                "value": "Description for rating 1"
-              }]
-            }
-          }
-        }
-      }
+          Product: {
+            Rating: [1, 2, 3],
+            Description: {
+              reference: "Rating",
+              values: [
+                {
+                  key: 1,
+                  value: "Description for rating 1",
+                },
+              ],
+            },
+          },
+        },
+      },
     });
 
     const mockData = generator.createMockData();
@@ -129,30 +133,34 @@ describe("ODataMockGenerator - generating with rules", () => {
           "Products",
           "Persons",
           "PersonDetails",
-          "Suppliers"
+          "Suppliers",
         ],
         variables: {
-          categoryIds: [1, 2, 3]
+          categoryIds: [1, 2, 3],
         },
         predefined: {
           Category: {
             ID: "$ref:categoryIds",
             Name: {
               reference: "ID",
-              values: [{
-                key: 1,
-                value: "My Category1"
-              }, {
-                key: 2,
-                value: "My Category2"
-              }, {
-                key: 3,
-                value: "My Category3"
-              }]
-            }
-          }
-        }
-      }
+              values: [
+                {
+                  key: 1,
+                  value: "My Category1",
+                },
+                {
+                  key: 2,
+                  value: "My Category2",
+                },
+                {
+                  key: 3,
+                  value: "My Category3",
+                },
+              ],
+            },
+          },
+        },
+      },
     });
 
     const mockData = generator.createMockData();
@@ -177,17 +185,17 @@ describe("ODataMockGenerator - generating with rules", () => {
           "Advertisements",
           "Persons",
           "PersonDetails",
-          "Suppliers"
+          "Suppliers",
         ],
         variables: {
-          categoryIds: [1, 2, 3]
+          categoryIds: [1, 2, 3],
         },
         predefined: {
           Category: {
             ID: "$ref:categoryIds",
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     const mockData = generator.createMockData();

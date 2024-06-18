@@ -8,11 +8,13 @@ describe("xmlParser tests", () => {
     <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" Namespace="ODataDemo">
     <EntityType Name="Product"`;
 
-    expect((() => { parseXML(invalidXML); })).to.throw("Invalid XML");
+    expect(() => {
+      parseXML(invalidXML);
+    }).to.throw("Invalid XML");
   });
 
   it("returns parsed XML", () => {
-    const validXML = "<ns:root><ns:some attr=\"aaaa\"></ns:some></ns:root>";
+    const validXML = '<ns:root><ns:some attr="aaaa"></ns:some></ns:root>';
 
     expect(parseXML(validXML)).not.to.be.null;
   });

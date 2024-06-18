@@ -2,12 +2,18 @@ import { expect } from "chai";
 import { readFileSync } from "fs";
 import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
-const metadataXml = readFileSync("test/support/fixtures/metadata.xml").toString();
-const metadataV3Xml = readFileSync("test/support/fixtures/metadataV3.xml").toString();
+const metadataXml = readFileSync(
+  "test/support/fixtures/metadata.xml"
+).toString();
+const metadataV3Xml = readFileSync(
+  "test/support/fixtures/metadataV3.xml"
+).toString();
 
 describe("ODataMockGenerator - generating without rules", () => {
   it("creates expected number of entites", () => {
-    const generator = new ODataMockGenerator(metadataXml, { defaultLengthOfEntitySets: 5 });
+    const generator = new ODataMockGenerator(metadataXml, {
+      defaultLengthOfEntitySets: 5,
+    });
     const mockData = generator.createMockData();
 
     expect(mockData).not.to.be.null;
@@ -20,7 +26,9 @@ describe("ODataMockGenerator - generating without rules", () => {
   });
 
   it("fills entity properties and navigation links", () => {
-    const generator = new ODataMockGenerator(metadataXml, { defaultLengthOfEntitySets: 1 });
+    const generator = new ODataMockGenerator(metadataXml, {
+      defaultLengthOfEntitySets: 1,
+    });
     const mockData = generator.createMockData();
     expect(mockData.Products).has.length(1);
 
@@ -35,33 +43,35 @@ describe("ODataMockGenerator - generating without rules", () => {
     expect(product.Single).to.be.a("number").and.is.greaterThan(0);
     expect(product.Decimal).to.be.a("number").and.is.greaterThan(0);
     expect(product.SByte).to.be.a("number");
-    expect(product.Time).to.be.a("string").and.matches(/PT.\d*H\d*M\d*S\d*/);
+    expect(product.Time)
+      .to.be.a("string")
+      .and.matches(/PT.\d*H\d*M\d*S\d*/);
     expect(product.__metadata.uri).to.equal(`/Products(${product.ID})`);
     expect(product.__metadata.type).to.equal("ODataDemo.Product");
 
     expect(product.Categories).to.deep.equal({
       __deferred: {
-        uri: `/Products(${product.ID})/Categories`
-      }
+        uri: `/Products(${product.ID})/Categories`,
+      },
     });
 
     expect(product.Supplier).to.deep.equal({
       __deferred: {
-        uri: `/Products(${product.ID})/Supplier`
-      }
+        uri: `/Products(${product.ID})/Supplier`,
+      },
     });
 
     expect(product.ProductDetail).to.deep.equal({
       __deferred: {
-        uri: `/Products(${product.ID})/ProductDetail`
-      }
+        uri: `/Products(${product.ID})/ProductDetail`,
+      },
     });
   });
 
   it("sets the correct root URI in the paths", () => {
     const generator = new ODataMockGenerator(metadataXml, {
       defaultLengthOfEntitySets: 1,
-      mockDataRootURI: "my/path"
+      mockDataRootURI: "my/path",
     });
 
     const mockData = generator.createMockData();
@@ -72,20 +82,20 @@ describe("ODataMockGenerator - generating without rules", () => {
 
     expect(product.Categories).to.deep.equal({
       __deferred: {
-        uri: `my/path/Products(${product.ID})/Categories`
-      }
+        uri: `my/path/Products(${product.ID})/Categories`,
+      },
     });
 
     expect(product.Supplier).to.deep.equal({
       __deferred: {
-        uri: `my/path/Products(${product.ID})/Supplier`
-      }
+        uri: `my/path/Products(${product.ID})/Supplier`,
+      },
     });
 
     expect(product.ProductDetail).to.deep.equal({
       __deferred: {
-        uri: `my/path/Products(${product.ID})/ProductDetail`
-      }
+        uri: `my/path/Products(${product.ID})/ProductDetail`,
+      },
     });
   });
 

@@ -1,63 +1,101 @@
 {
-  "Products": [{
-    "ID": 9,
-    "Name": "Name 1",
-    "Description": "Description 1",
-    "ReleaseDate": "/Date(967811009000)/",
-    "DiscontinuedDate": "/Date(1114259009000)/",
-    "Rating": 416,
-    "Price": 0.00985394674611232,
-    "__metadata": { "uri": "/Products(9)", "type": "ODataDemo.Product" },
-    "Categories": { "__deferred": { "uri": "/Products(9)/Categories" } },
-    "Supplier": { "__deferred": { "uri": "/Products(9)/Supplier" } },
-    "ProductDetail": { "__deferred": { "uri": "/Products(9)/ProductDetail" } }
-  }],
-  "ProductDetails": [{
-    "ProductID": 6671,
-    "Details": "Details 1",
-    "__metadata": { "uri": "/ProductDetails(6671)", "type": "ODataDemo.ProductDetail" },
-    "Product": { "__deferred": { "uri": "/ProductDetails(6671)/Product" } }
-  }],
-  "Categories": [{
-    "ID": 2613,
-    "Name": "Name 1",
-    "__metadata": { "uri": "/Categories(2613)", "type": "ODataDemo.Category" },
-    "Products": { "__deferred": { "uri": "/Categories(2613)/Products" } }
-  }],
-  "Suppliers": [{
-    "ID": 7960,
-    "Name": "Name 1",
-    "Address": { "Street": "Street 1", "City": "City 1", "State": "State 1", "ZipCode": "ZipCode 1", "Country": "Country 1" },
-    "Location": {},
-    "Concurrency": 2584,
-    "__metadata": { "uri": "/Suppliers(7960)", "type": "ODataDemo.Supplier" },
-    "Products": { "__deferred": { "uri": "/Suppliers(7960)/Products" } }
-  }],
-  "Persons": [{
-    "ID": 5101,
-    "Name": "Name 1",
-    "__metadata": { "uri": "/Persons(5101)", "type": "ODataDemo.Person" },
-    "PersonDetail": { "__deferred": { "uri": "/Persons(5101)/PersonDetail" } }
-  }],
-  "PersonDetails": [{
-    "PersonID": 7638,
-    "Age": 0,
-    "Gender": true,
-    "Phone": "Phone 1",
-    "Address": { "Street": "Street 1", "City": "City 1", "State": "State 1", "ZipCode": "ZipCode 1", "Country": "Country 1" },
-    "Photo": {},
-    "__metadata": { "uri": "/PersonDetails(7638)", "type": "ODataDemo.PersonDetail" },
-    "Person": { "__deferred": { "uri": "/PersonDetails(7638)/Person" } }
-  }],
-  "Advertisements": [{
-    "ID": "00a4c48c-0dfc-4507-abc6-9b54a431b788",
-    "Name": "Name 1",
-    "AirDate": "/Date(1264166609000)/",
-    "__metadata": { "uri": "/Advertisements(guid'00a4c48c-0dfc-4507-abc6-9b54a431b788')", "type": "ODataDemo.Advertisement" },
-    "FeaturedProduct": {
-      "__deferred": {
-        "uri": "/Advertisements(guid'00a4c48c-0dfc-4507-abc6-9b54a431b788')/FeaturedProduct"
+  "Products": [
+    {
+      "ID": 9,
+      "Name": "Name 1",
+      "Description": "Description 1",
+      "ReleaseDate": "/Date(967811009000)/",
+      "DiscontinuedDate": "/Date(1114259009000)/",
+      "Rating": 416,
+      "Price": 0.00985394674611232,
+      "__metadata": { "uri": "/Products(9)", "type": "ODataDemo.Product" },
+      "Categories": { "__deferred": { "uri": "/Products(9)/Categories" } },
+      "Supplier": { "__deferred": { "uri": "/Products(9)/Supplier" } },
+      "ProductDetail": { "__deferred": { "uri": "/Products(9)/ProductDetail" } }
+    }
+  ],
+  "ProductDetails": [
+    {
+      "ProductID": 6671,
+      "Details": "Details 1",
+      "__metadata": {
+        "uri": "/ProductDetails(6671)",
+        "type": "ODataDemo.ProductDetail"
+      },
+      "Product": { "__deferred": { "uri": "/ProductDetails(6671)/Product" } }
+    }
+  ],
+  "Categories": [
+    {
+      "ID": 2613,
+      "Name": "Name 1",
+      "__metadata": {
+        "uri": "/Categories(2613)",
+        "type": "ODataDemo.Category"
+      },
+      "Products": { "__deferred": { "uri": "/Categories(2613)/Products" } }
+    }
+  ],
+  "Suppliers": [
+    {
+      "ID": 7960,
+      "Name": "Name 1",
+      "Address": {
+        "Street": "Street 1",
+        "City": "City 1",
+        "State": "State 1",
+        "ZipCode": "ZipCode 1",
+        "Country": "Country 1"
+      },
+      "Location": {},
+      "Concurrency": 2584,
+      "__metadata": { "uri": "/Suppliers(7960)", "type": "ODataDemo.Supplier" },
+      "Products": { "__deferred": { "uri": "/Suppliers(7960)/Products" } }
+    }
+  ],
+  "Persons": [
+    {
+      "ID": 5101,
+      "Name": "Name 1",
+      "__metadata": { "uri": "/Persons(5101)", "type": "ODataDemo.Person" },
+      "PersonDetail": { "__deferred": { "uri": "/Persons(5101)/PersonDetail" } }
+    }
+  ],
+  "PersonDetails": [
+    {
+      "PersonID": 7638,
+      "Age": 0,
+      "Gender": true,
+      "Phone": "Phone 1",
+      "Address": {
+        "Street": "Street 1",
+        "City": "City 1",
+        "State": "State 1",
+        "ZipCode": "ZipCode 1",
+        "Country": "Country 1"
+      },
+      "Photo": {},
+      "__metadata": {
+        "uri": "/PersonDetails(7638)",
+        "type": "ODataDemo.PersonDetail"
+      },
+      "Person": { "__deferred": { "uri": "/PersonDetails(7638)/Person" } }
+    }
+  ],
+  "Advertisements": [
+    {
+      "ID": "00a4c48c-0dfc-4507-abc6-9b54a431b788",
+      "Name": "Name 1",
+      "AirDate": "/Date(1264166609000)/",
+      "__metadata": {
+        "uri": "/Advertisements(guid'00a4c48c-0dfc-4507-abc6-9b54a431b788')",
+        "type": "ODataDemo.Advertisement"
+      },
+      "FeaturedProduct": {
+        "__deferred": {
+          "uri": "/Advertisements(guid'00a4c48c-0dfc-4507-abc6-9b54a431b788')/FeaturedProduct"
+        }
       }
     }
-  }]
+  ]
 }

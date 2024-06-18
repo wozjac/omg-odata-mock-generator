@@ -6,9 +6,9 @@ export function findEntityTypes(metdataXMLDocument) {
     const entityTypeItem = entityTypes.item(i);
 
     result[entityTypeItem.getAttribute("Name")] = {
-      "name": entityTypeItem.getAttribute("Name"),
-      "properties": [],
-      "keys": []
+      name: entityTypeItem.getAttribute("Name"),
+      properties: [],
+      keys: [],
     };
 
     const properties = entityTypeItem.getElementsByTagName("Property");
@@ -18,12 +18,14 @@ export function findEntityTypes(metdataXMLDocument) {
       const type = oProperty.getAttribute("Type");
 
       result[entityTypeItem.getAttribute("Name")].properties.push({
-        "schema": type.substring(0, type.lastIndexOf(".")),
-        "type": type.substring(type.lastIndexOf(".") + 1),
-        "name": oProperty.getAttribute("Name"),
-        "precision": oProperty.getAttribute("Precision"),
-        "scale": oProperty.getAttribute("Scale"),
-        "maxLength": oProperty.getAttribute("MaxLength") ? Number.parseInt(oProperty.getAttribute("MaxLength")) : undefined
+        schema: type.substring(0, type.lastIndexOf(".")),
+        type: type.substring(type.lastIndexOf(".") + 1),
+        name: oProperty.getAttribute("Name"),
+        precision: oProperty.getAttribute("Precision"),
+        scale: oProperty.getAttribute("Scale"),
+        maxLength: oProperty.getAttribute("MaxLength")
+          ? Number.parseInt(oProperty.getAttribute("MaxLength"))
+          : undefined,
       });
     }
 
@@ -46,8 +48,8 @@ export function findComplexTypes(metdataXMLDocument) {
   for (let i = 0; i < complexTypes.length; i++) {
     const complexTypeItem = complexTypes.item(i);
     result[complexTypeItem.getAttribute("Name")] = {
-      "name": complexTypeItem.getAttribute("Name"),
-      "properties": []
+      name: complexTypeItem.getAttribute("Name"),
+      properties: [],
     };
 
     const properties = complexTypeItem.getElementsByTagName("Property");
@@ -57,11 +59,11 @@ export function findComplexTypes(metdataXMLDocument) {
       const type = propertyItem.getAttribute("Type");
 
       result[complexTypeItem.getAttribute("Name")].properties.push({
-        "schema": type.substring(0, type.lastIndexOf(".")),
-        "type": type.substring(type.lastIndexOf(".") + 1),
-        "name": propertyItem.getAttribute("Name"),
-        "precision": propertyItem.getAttribute("Precision"),
-        "scale": propertyItem.getAttribute("Scale")
+        schema: type.substring(0, type.lastIndexOf(".")),
+        type: type.substring(type.lastIndexOf(".") + 1),
+        name: propertyItem.getAttribute("Name"),
+        precision: propertyItem.getAttribute("Precision"),
+        scale: propertyItem.getAttribute("Scale"),
       });
     }
   }
@@ -79,23 +81,29 @@ export function findEntitySets(metdataXMLDocument) {
   for (let i = 0; i < entitySets.length; i++) {
     const entitySet = entitySets.item(i);
     // split the namespace and the name of the entity type (namespace could have dots inside)
-    const entityTypeParts = /((.*)\.)?(.*)/.exec(entitySet.getAttribute("EntityType"));
+    const entityTypeParts = /((.*)\.)?(.*)/.exec(
+      entitySet.getAttribute("EntityType")
+    );
 
     result[entitySet.getAttribute("Name")] = {
-      "name": entitySet.getAttribute("Name"),
-      "schema": entityTypeParts[2],
-      "type": entityTypeParts[3],
-      "keys": [],
-      "keysType": {},
-      "navprops": {}
+      name: entitySet.getAttribute("Name"),
+      schema: entityTypeParts[2],
+      type: entityTypeParts[3],
+      keys: [],
+      keysType: {},
+      navprops: {},
     };
   }
 
   // helper function to find the entity set and property reference
   // for the given role name
-  const fnResolveNavProp = function(sRole, aAssociation, aAssociationSet, bFrom) {
-    let entitySet,
-      multiplicity;
+  const fnResolveNavProp = function (
+    sRole,
+    aAssociation,
+    aAssociationSet,
+    bFrom
+  ) {
+    let entitySet, multiplicity;
 
     for (let i = 0; i < aAssociationSet.length; i++) {
       const element = aAssociationSet[i];
@@ -103,7 +111,10 @@ export function findEntitySets(metdataXMLDocument) {
       for (let j = 0; j < element.childNodes.length; j++) {
         const childElement = element.childNodes[j];
 
-        if (childElement.tagName === "End" && childElement.getAttribute("Role") === sRole) {
+        if (
+          childElement.tagName === "End" &&
+          childElement.getAttribute("Role") === sRole
+        ) {
           entitySet = childElement.getAttribute("EntitySet");
           break;
         }
@@ -116,7 +127,10 @@ export function findEntitySets(metdataXMLDocument) {
       for (let j = 0; j < element.childNodes.length; j++) {
         const childElement = element.childNodes[j];
 
-        if (childElement.tagName === "End" && childElement.getAttribute("Role") === sRole) {
+        if (
+          childElement.tagName === "End" &&
+          childElement.getAttribute("Role") === sRole
+        ) {
           multiplicity = childElement.getAttribute("Multiplicity");
           break;
         }
@@ -162,7 +176,7 @@ export function findEntitySets(metdataXMLDocument) {
         }
       }
     } else {
-      const principalDeps = (bFrom) ? principals : dependents;
+      const principalDeps = bFrom ? principals : dependents;
 
       for (let i = 0; i < principalDeps.length; i++) {
         const oPrinDep = principalDeps.item(i);
@@ -183,10 +197,10 @@ export function findEntitySets(metdataXMLDocument) {
     }
 
     return {
-      "role": sRole,
-      "entitySet": entitySet,
-      "propRef": foundPropertyRefs,
-      "multiplicity": multiplicity
+      role: sRole,
+      entitySet: entitySet,
+      propRef: foundPropertyRefs,
+      multiplicity: multiplicity,
     };
   };
 
@@ -229,27 +243,35 @@ export function findEntitySets(metdataXMLDocument) {
       const entityTypeItem = entityTypes.item(i);
 
       if (entityTypeItem.getAttribute("Name") === entitySet.type) {
-        navigationProperties = entityTypeItem.getElementsByTagName("NavigationProperty");
+        navigationProperties =
+          entityTypeItem.getElementsByTagName("NavigationProperty");
       }
     }
 
     for (let w = 0; w < navigationProperties.length; w++) {
       const navigationProperty = navigationProperties.item(w);
-      const relationshipParts = navigationProperty.getAttribute("Relationship").split(".");
-      const associationsSet = metdataXMLDocument.getElementsByTagName("AssociationSet");
+      const relationshipParts = navigationProperty
+        .getAttribute("Relationship")
+        .split(".");
+      const associationsSet =
+        metdataXMLDocument.getElementsByTagName("AssociationSet");
       const foundAssociationSet = [];
 
       for (let f = 0; f < associationsSet.length; f++) {
         const associationSetItem = associationsSet.item(f);
 
-        if (associationSetItem.getAttribute("Association") === relationshipParts.join(".")) {
+        if (
+          associationSetItem.getAttribute("Association") ===
+          relationshipParts.join(".")
+        ) {
           foundAssociationSet.push(associationSetItem);
         }
       }
 
       const relationshipName = relationshipParts.pop();
       const foundAssociations = [];
-      const associations = metdataXMLDocument.getElementsByTagName("Association");
+      const associations =
+        metdataXMLDocument.getElementsByTagName("Association");
 
       for (let k = 0; k < associations.length; k++) {
         const associationItem = associations.item(k);
@@ -260,9 +282,19 @@ export function findEntitySets(metdataXMLDocument) {
       }
 
       entitySet.navprops[navigationProperty.getAttribute("Name")] = {
-        "name": navigationProperty.getAttribute("Name"),
-        "from": fnResolveNavProp(navigationProperty.getAttribute("FromRole"), foundAssociations, foundAssociationSet, true),
-        "to": fnResolveNavProp(navigationProperty.getAttribute("ToRole"), foundAssociations, foundAssociationSet, false)
+        name: navigationProperty.getAttribute("Name"),
+        from: fnResolveNavProp(
+          navigationProperty.getAttribute("FromRole"),
+          foundAssociations,
+          foundAssociationSet,
+          true
+        ),
+        to: fnResolveNavProp(
+          navigationProperty.getAttribute("ToRole"),
+          foundAssociations,
+          foundAssociationSet,
+          false
+        ),
       };
     }
   }

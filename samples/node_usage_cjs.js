@@ -16,12 +16,12 @@ function run() {
     rules: {
       skipMockGeneration: ["Persons", "Suppliers"],
       variables: {
-        categoryIds: [1, 2, 3]
+        categoryIds: [1, 2, 3],
       },
       faker: {
         Product: {
-          Name: "commerce.productName"
-        }
+          Name: "commerce.productName",
+        },
       },
       distinctValues: ["Categories"],
       predefined: {
@@ -29,20 +29,24 @@ function run() {
           ID: "$ref:categoryIds",
           Name: {
             reference: "ID",
-            values: [{
-              key: 1,
-              value: "Category1"
-            }, {
-              key: 2,
-              value: "Category2"
-            }, {
-              key: 3,
-              value: "Category3"
-            }]
-          }
-        }
-      }
-    }
+            values: [
+              {
+                key: 1,
+                value: "Category1",
+              },
+              {
+                key: 2,
+                value: "Category2",
+              },
+              {
+                key: 3,
+                value: "Category3",
+              },
+            ],
+          },
+        },
+      },
+    },
   };
 
   const generator = new ODataMockGenerator(metadata, options);

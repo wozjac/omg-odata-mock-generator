@@ -14,10 +14,10 @@
     var metadata;
 
     fetch("https://services.odata.org/V3/OData/OData.svc/$metadata")
-      .then(function(response) {
+      .then(function (response) {
         return response.text();
       })
-      .then(function(data) {
+      .then(function (data) {
         metadata = data;
 
         var options = {

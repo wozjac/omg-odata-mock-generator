@@ -4,7 +4,11 @@ export function parseXML(xml) {
   let hasErrors = false;
 
   const parsedXML = new DOMParser({
-    errorHandler: { error: () => { hasErrors = true; } }
+    errorHandler: {
+      error: () => {
+        hasErrors = true;
+      },
+    },
   }).parseFromString(xml);
 
   if (hasErrors) {
