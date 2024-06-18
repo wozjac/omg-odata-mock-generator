@@ -2,7 +2,9 @@ import { expect } from "chai";
 import { readFileSync } from "fs";
 import { ODataMockGenerator } from "../src/ODataMockGenerator.js";
 
-const metadataXml = readFileSync("test/support/fixtures/metadataRefConstraints.xml").toString();
+const metadataXml = readFileSync(
+  "test/support/fixtures/metadataRefConstraints.xml"
+).toString();
 
 describe("ODataMockGenerator - generation based on metadata with referential constraints", () => {
   it("creates correct IDs in properties, which are in referential constraints", () => {
@@ -15,8 +17,8 @@ describe("ODataMockGenerator - generation based on metadata with referential con
         "ReviewAggregates",
         "ShoppingCartItems",
         "ShoppingCarts",
-        "Images"
-      ]
+        "Images",
+      ],
     });
 
     const mockData = generator.createMockData();
@@ -34,7 +36,9 @@ describe("ODataMockGenerator - generation based on metadata with referential con
 
     for (const product of mockData.Products) {
       expect(product.SupplierId).to.be.oneOf(generatedSupplierIDs);
-      expect(product.__metadata.uri).to.equal("/" + encodeURIComponent(`Products('${product.Id}')`));
+      expect(product.__metadata.uri).to.equal(
+        "/" + encodeURIComponent(`Products('${product.Id}')`)
+      );
     }
   });
 
@@ -48,22 +52,22 @@ describe("ODataMockGenerator - generation based on metadata with referential con
         "ReviewAggregates",
         "ShoppingCartItems",
         "ShoppingCarts",
-        "Images"
+        "Images",
       ],
       rules: {
         variables: {
-          ids: [1, 2, 3, 4, 5]
+          ids: [1, 2, 3, 4, 5],
         },
         distinctValues: ["Suppliers"],
         predefined: {
           Supplier: {
-            Id: "$ref:ids"
+            Id: "$ref:ids",
           },
           Product: {
-            SupplierId: "$ref:ids"
-          }
-        }
-      }
+            SupplierId: "$ref:ids",
+          },
+        },
+      },
     });
 
     const mockData = generator.createMockData();
@@ -83,7 +87,55 @@ describe("ODataMockGenerator - generation based on metadata with referential con
     for (const product of mockData.Products) {
       expect(product.SupplierId).to.be.oneOf(generatedSupplierIDs);
       expect(product.SupplierId).to.be.oneOf([1, 2, 3, 4, 5]);
-      expect(product.__metadata.uri).to.equal("/" + encodeURIComponent(`Products('${product.Id}')`));
+      expect(product.__metadata.uri).to.equal(
+        "/" + encodeURIComponent(`Products('${product.Id}')`)
+      );
+    }
+  });
+
+  it("creates data with automatically generated relations based on uids; entity sets have correct IDs and URIs", () => {
+    const generator = new ODataMockGenerator(metadataXml, {
+      defaultLengthOfEntitySets: 10,
+      skipMockGeneration: [
+        "MainCategories",
+        "SubCategories",
+        "Reviews",
+        "ReviewAggregates",
+        "ShoppingCartItems",
+        "ShoppingCarts",
+        "Images",
+      ],
+      rules: {
+        distinctValues: ["Suppliers"],
+        relationships: {
+          Product: {
+            SupplierId: {
+              reference: "Supplier",
+              key: "Id",
+            },
+          },
+        },
+      },
+    });
+
+    const mockData = generator.createMockData();
+
+    expect(mockData.Products).has.length(10);
+    // expect(mockData.Suppliers).has.length.at.most(5);
+
+    const generatedSupplierIDs = [];
+
+    for (const supplier of mockData.Suppliers) {
+      generatedSupplierIDs.push(supplier.Id);
+      expect(supplier.__metadata.uri).to.equal(`/Suppliers(${supplier.Id})`);
+    }
+
+    for (const product of mockData.Products) {
+      expect(product.__metadata.uri).to.equal(
+        "/" + encodeURIComponent(`Products('${product.Id}')`)
+      );
+      // we have automatically generated relations based on uids here...
+      expect(product.SupplierId).to.be.oneOf(generatedSupplierIDs);
     }
   });
 });
