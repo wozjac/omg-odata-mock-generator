@@ -60,18 +60,18 @@ import * as metadataExtract from "./metadataExtract.js";
 
 /**
  * OData Mock Data Generator
- * 
+ *
  */
 export class ODataMockGenerator {
   /**
    * @constructor
-   * @param {string} metadata OData metadata XML 
+   * @param {string} metadata OData metadata XML
    * @param {Object} [options={}] Generation options and rules
    * @param {number} [options.defaultLengthOfEntitySets=30] Number of entities to generate for each entity set
    * @param {string} [options.mockDataRootURI=""] Root URI which prefixes __metadata.uri property in the generated entities
    * @param {Object} [options.rules={}] Additional rules
    * @param {string[]} [options.rules.skipMockGeneration=[]] Do not generate data for the given entity sets
-   * @param {string[]} [options.rules.distinctValues=[]] Generate only distinct entries (based on the key properties) for the given entity sets 
+   * @param {string[]} [options.rules.distinctValues=[]] Generate only distinct entries (based on the key properties) for the given entity sets
    * @param {Object} [options.rules.predefined={}] Predefined values for the given entities, see README
    * @param {Object} [options.rules.variables={}] Variables to use in "predefined" rules, see README
    * @param {Object} [options.rules.faker={}] Faker.js methods used to generate data for given properties, see README
@@ -102,6 +102,12 @@ export class ODataMockGenerator {
     this._predefinedChosenValues = {};
     this._dataGenerator = new DataGenerator();
 
+    this._relationships = options.rules.relationships || {};
+    this._includeTypeAttribute =
+      options.includeTypeAttribute !== undefined
+        ? options.includeTypeAttribute
+        : true;
+
     try {
       this._metdataXMLDocument = parseXML(metadata);
     } catch (error) {
@@ -110,8 +116,32 @@ export class ODataMockGenerator {
   }
 
   /**
-   * Generates mock data based on the metadata and options passed to the constructor 
-   * 
+   *
+   * Generates relationships between entities mentioned in the configuration
+   *
+   * @param {Object} oMockData incoming data
+   */
+  _applyRelationships(oMockData) {
+    console.log("_applyRelationships", this._relationships);
+    for (const [entity, relations] of Object.entries(this._relationships)) {
+      if (oMockData[entity]) {
+        oMockData[entity].forEach((entityData) => {
+          for (const [property, relation] of Object.entries(relations)) {
+            const relatedData = oMockData[relation.reference];
+            if (relatedData) {
+              const relatedEntity =
+                relatedData[Math.floor(Math.random() * relatedData.length)];
+              entityData[property] = relatedEntity[relation.key];
+            }
+          }
+        });
+      }
+    }
+  }
+
+  /**
+   * Generates mock data based on the metadata and options passed to the constructor
+   *
    * @returns {Object} Generated data in form { EntitySet1: [{ ..properties.. }], EntitySet2: [{ .. properties.. }] }
    */
   createMockData() {
@@ -120,16 +150,21 @@ export class ODataMockGenerator {
 
     //exclude adjustments
     this._skipMockGeneration.forEach((element) => {
-      if (entitySetNames.find((name) => {
+      if (
+        entitySetNames.find((name) => {
           return name === element;
-        })) {
-
+        })
+      ) {
         delete entitySets[element];
       }
     });
 
-    this._mEntityTypes = metadataExtract.findEntityTypes(this._metdataXMLDocument);
-    this._mComplexTypes = metadataExtract.findComplexTypes(this._metdataXMLDocument);
+    this._mEntityTypes = metadataExtract.findEntityTypes(
+      this._metdataXMLDocument
+    );
+    this._mComplexTypes = metadataExtract.findComplexTypes(
+      this._metdataXMLDocument
+    );
     this._generateMockdata(entitySets);
 
     return this._oMockdata;
@@ -143,48 +178,89 @@ export class ODataMockGenerator {
       const mEntitySet = {};
       const oEntitySet = mEntitySets[sEntitySetName];
       mEntitySet[oEntitySet.name] = oEntitySet;
-      oMockData[sEntitySetName] = this._generateODataMockdataForEntitySet(mEntitySet)[sEntitySetName];
+      oMockData[sEntitySetName] =
+        this._generateODataMockdataForEntitySet(mEntitySet)[sEntitySetName];
     }
+
+    this._applyRelationships(oMockData);
 
     // changing the values if there is a referential constraint
     for (const sEntitySetName in mEntitySets) {
       const oEntitySet = mEntitySets[sEntitySetName];
       for (const navprop in oEntitySet.navprops) {
         const oNavProp = oEntitySet.navprops[navprop];
-        const iPropRefLength = oNavProp.from.propRef.length;
+        let iPropRefLength;
+        try {
+          iPropRefLength = oNavProp.from.propRef.length;
+        } catch (error) {
+          console.log(error);
+        }
         for (let j = 0; j &lt; iPropRefLength; j++) {
           for (let i = 0; i &lt; oMockData[sEntitySetName].length; i++) {
             // copy the value from the principle to the dependant;
             const oEntity = oMockData[sEntitySetName][i];
 
-            if (this._predefinedValuesConfig[oNavProp.name] &amp;&amp;
-              this._predefinedValuesConfig[oNavProp.name][oNavProp.to.propRef[j]]) {
-              const chosenValues = this._predefinedChosenValues[oNavProp.name][oNavProp.to.propRef[j]];
-              oEntity[oNavProp.from.propRef[j]] = chosenValues[Math.floor(Math.random() * chosenValues.length)];
+            if (
+              this._predefinedValuesConfig[oNavProp.name] &amp;&amp;
+              this._predefinedValuesConfig[oNavProp.name][
+                oNavProp.to.propRef[j]
+              ]
+            ) {
+              const chosenValues =
+                this._predefinedChosenValues[oNavProp.name][
+                  oNavProp.to.propRef[j]
+                ];
+              oEntity[oNavProp.from.propRef[j]] =
+                chosenValues[Math.floor(Math.random() * chosenValues.length)];
             } else {
-              oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] = oEntity[oNavProp.from.propRef[j]];
+              try {
+                oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] =
+                  oEntity[oNavProp.from.propRef[j]];
+              } catch (error) {
+                throw new Error(
+                  `Could not find a respective entry in ${oNavProp.to.entitySet} ` +
+                    `to update its value from a navigation related property ${oNavProp.from.propRef} ` +
+                    `in ${sEntitySetName}. Check it the target entity set generation is not limited or skipped`
+                );
+              }
             }
           }
         }
       }
     }
 
-    // set URIs 
+    // set URIs
     for (const sEntitySetName in mEntitySets) {
       const oEntitySet = mEntitySets[sEntitySetName];
       oMockData[sEntitySetName].forEach((oEntry) => {
         // add the metadata for the entry
         oEntry.__metadata = {
-          uri: sRootUri + sEntitySetName + "(" + this._createKeysString(oEntitySet, oEntry) + ")",
-          type: oEntitySet.schema + "." + oEntitySet.type
+          uri:
+            sRootUri +
+            sEntitySetName +
+            "(" +
+            this._createKeysString(oEntitySet, oEntry) +
+            ")",
+          type: oEntitySet.schema + "." + oEntitySet.type,
         };
         // add the navigation properties
-        for (const sKey in oEntitySet.navprops) {
-          oEntry[sKey] = {
-            __deferred: {
-              uri: sRootUri + sEntitySetName + "(" + this._createKeysString(oEntitySet, oEntry) + ")/" + sKey
-            }
-          };
+        if (this._includeTypeAttribute) {
+          for (const sKey in oEntitySet.navprops) {
+            oEntry[sKey] = {
+              __deferred: {
+                uri:
+                  sRootUri +
+                  sEntitySetName +
+                  "(" +
+                  this._createKeysString(oEntitySet, oEntry) +
+                  ")/" +
+                  sKey,
+              },
+            };
+          }
+        } else {
+          // remove the type attribute
+          delete oEntry.type;
         }
       });
     }
@@ -266,7 +342,12 @@ export class ODataMockGenerator {
 
     for (let i = 0; i &lt; oEntityType.properties.length; i++) {
       const oProperty = oEntityType.properties[i];
-      oEntity[oProperty.name] = this._generatePropertyValue(oProperty, iIndex, oEntityType, oEntity);
+      oEntity[oProperty.name] = this._generatePropertyValue(
+        oProperty,
+        iIndex,
+        oEntityType,
+        oEntity
+      );
     }
 
     return oEntity;
@@ -279,9 +360,10 @@ export class ODataMockGenerator {
     }
 
     //predefined?
-    if (this._predefinedValuesConfig[entityType.name] &amp;&amp;
-      this._predefinedValuesConfig[entityType.name][property.name]) {
-
+    if (
+      this._predefinedValuesConfig[entityType.name] &amp;&amp;
+      this._predefinedValuesConfig[entityType.name][property.name]
+    ) {
       if (!this._predefinedChosenValues[entityType.name]) {
         this._predefinedChosenValues[entityType.name] = {};
       }
@@ -290,15 +372,22 @@ export class ODataMockGenerator {
         this._predefinedChosenValues[entityType.name][property.name] = [];
       }
 
-      const propertyConfig = this._predefinedValuesConfig[entityType.name][property.name];
+      const propertyConfig =
+        this._predefinedValuesConfig[entityType.name][property.name];
       let chosenValue;
 
       if (Array.isArray(propertyConfig)) {
         //array of values
-        chosenValue = propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
-        this._predefinedChosenValues[entityType.name][property.name].push(chosenValue);
+        chosenValue =
+          propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
+        this._predefinedChosenValues[entityType.name][property.name].push(
+          chosenValue
+        );
         return chosenValue;
-      } else if (typeof propertyConfig === "string" &amp;&amp; propertyConfig.indexOf("$ref") !== -1) {
+      } else if (
+        typeof propertyConfig === "string" &amp;&amp;
+        propertyConfig.indexOf("$ref") !== -1
+      ) {
         const variableName = propertyConfig.split(":")[1];
 
         if (this._variables &amp;&amp; this._variables[variableName]) {
@@ -306,13 +395,16 @@ export class ODataMockGenerator {
 
           if (Array.isArray(variable)) {
             chosenValue = variable[Math.floor(Math.random() * variable.length)];
-            this._predefinedChosenValues[entityType.name][property.name].push(chosenValue);
+            this._predefinedChosenValues[entityType.name][property.name].push(
+              chosenValue
+            );
             return chosenValue;
           } else {
             return variable;
           }
         } else {
-          throw new Error(`Variable ${propertyConfig} not found`);
+          throw new Error(`
+                    Variable $ { propertyConfig } not found `);
         }
       } else {
         //dependent?
@@ -334,9 +426,19 @@ export class ODataMockGenerator {
             for (const i in entityType.properties) {
               if (entityType.properties[i].name === propertyConfig.reference) {
                 const emptyProperty = entityType.properties[i];
-                entity[emptyProperty.name] = this._generatePropertyValue(emptyProperty, iIndexParameter, entityType, entity);
+                entity[emptyProperty.name] = this._generatePropertyValue(
+                  emptyProperty,
+                  iIndexParameter,
+                  entityType,
+                  entity
+                );
                 //and run again for current
-                return this._generatePropertyValue(property, iIndexParameter, entityType, entity);
+                return this._generatePropertyValue(
+                  property,
+                  iIndexParameter,
+                  entityType,
+                  entity
+                );
               }
             }
           }
@@ -345,9 +447,10 @@ export class ODataMockGenerator {
     }
 
     // faker?
-    if (this._fakerConfig[entityType.name] &amp;&amp;
-      this._fakerConfig[entityType.name][property.name]) {
-
+    if (
+      this._fakerConfig[entityType.name] &amp;&amp;
+      this._fakerConfig[entityType.name][property.name]
+    ) {
       const fakerCall = this._fakerConfig[entityType.name][property.name];
       let generatedValue;
 
@@ -366,7 +469,9 @@ export class ODataMockGenerator {
 
         return generatedValue;
       } catch (error) {
-        throw new Error(`faker.js call error, check the config for ${entityType.name}/${property.name}`);
+        throw new Error(
+          `faker.js call error, check the config for ${entityType.name}/${property.name}`
+        );
       }
     }
 
@@ -374,13 +479,22 @@ export class ODataMockGenerator {
     let index = iIndexParameter;
 
     if (!index) {
-      index = Math.floor(this._dataGenerator.getPseudoRandomNumber("String") * 10000) + 101;
+      index =
+        Math.floor(
+          this._dataGenerator.getPseudoRandomNumber("String") * 10000
+        ) + 101;
     }
 
-    let value = this._dataGenerator.generateValueForODataProperty(property, index);
+    let value = this._dataGenerator.generateValueForODataProperty(
+      property,
+      index
+    );
 
     if (value === null) {
-      value = this._generateDataFromEntity(this._mComplexTypes[property.type], index);
+      value = this._generateDataFromEntity(
+        this._mComplexTypes[property.type],
+        index
+      );
     }
 
     return value;
@@ -418,7 +532,8 @@ export class ODataMockGenerator {
     sUri = sUri &amp;&amp; /([^?#]*)([?#].*)?/.exec(sUri)[1]; // remove URL parameters or anchors
     return sUri;
   }
-}</code></pre>
+}
+</code></pre>
         </article>
     </section>
 
@@ -434,7 +549,7 @@ export class ODataMockGenerator {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Thu May 27 2021 00:27:28 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Jun 18 2024 22:22:36 GMT+0200 (czas środkowoeuropejski letni)
 </footer>
 
 <script> prettyPrint(); </script>
