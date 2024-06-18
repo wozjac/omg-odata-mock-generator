@@ -5,13 +5,15 @@
 ## Overview
 
 Generates random mock data for entities described in the OData metadata document.
-Based on the code from [OpenUI5 Mock Server](https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer), but has additional features:
+Based on the code from [OpenUI5 Mock Server](https://openui5.hana.ondemand.com/api/sap.ui.core.util.MockServer),
+but has additional features:
 
 - use faker.js API methods for data generation
 - generate specific number of entities for given entity sets
 - skip generation of Entitiy Sets you don't need
 - provide sets of values, which should be used instead of pure random values
-- more meanigful and related data - values from one property can have a specific value based on a value from another property, which helps with building navigations
+- more meanigful and related data - values from one property can have a specific value based
+  on a value from another property, which helps with building navigations
 - force to have only distinct entries within an Entity Set (based on key properties)
 
 ## Installation
@@ -82,7 +84,7 @@ Please also refer to [docs](https://wozjac.github.io/omg-odata-mock-generator/)
 
 ### Default generation
 
-**Note**: assuming _metadata_ is https://services.odata.org/V3/OData/OData.svc/$metadata
+**Note**: assuming _metadata_ is <https://services.odata.org/V3/OData/OData.svc/$metadata>
 
 ```javascript
 const generator = new ODataMockGenerator(metadata);
@@ -184,7 +186,9 @@ For example:
 ### Using faker.js
 
 Faker.js [API methods](https://marak.github.io/faker.js/#toc5__anchor) can be provided and they will be used
-instead of default logic for data generation. Alternatively, Mustache-like string with several values can be also passed as described in the faker.js docs, for example `{{name.lastName}}, {{name.firstName}} {{name.suffix}}`.
+instead of default logic for data generation. Alternatively, Mustache-like string with several values
+can be also passed as described in the faker.js docs, for
+example `{{name.lastName}}, {{name.firstName}} {{name.suffix}}`.
 If the string property has \*MaxLength" attribute, generated value will be limited accordingly.
 
 ```javascript
@@ -319,7 +323,8 @@ Not all dependent values has to be provided - if it is not found in _values_ arr
 
 ### Reusing predefined values
 
-It easier to keep predefined values in one place, as they might be used in several places. It can be done with help of special _variables_ property and special $ref:... handling:
+It easier to keep predefined values in one place, as they might be used in several places.
+It can be done with help of special _variables_ property and special $ref:... handling:
 
 ```javascript
 {
@@ -383,7 +388,8 @@ _Name_ will be based on _ID_, which takes values from _categoryIds_ variable.
 
 ### Distinct values
 
-Having predefined values for entities and their key properties, duplicated entries will be present, as the generator always produces the number of entries specified by the _mockDataEntitySize_.  
+Having predefined values for entities and their key properties, duplicated entries will be present,
+as the generator always produces the number of entries specified by the _mockDataEntitySize_.  
 To have only distinct values (based on all key properties):
 
 ```javascript
@@ -444,6 +450,6 @@ This plugin is licensed under the [MIT license](http://opensource.org/licenses/M
 
 Feel free to contact me:
 
-- wozjac@zoho.com
-- Twitter (https://twitter.com/jacekwoz)
-- LinkedIn (https://www.linkedin.com/in/jacek-wznk)
+- <wozjac@zoho.com> | <https://jacekw.dev>
+- Twitter (<https://twitter.com/jacekwoz>)
+- LinkedIn (<https://www.linkedin.com/in/jacek-wznk>)
