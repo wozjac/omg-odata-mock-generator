@@ -19,9 +19,3 @@ jobs:
         run: npm install --no-optional
       - name: Build
         run: npm run build
-      - name: Coveralls
-        if: runner.os == 'Linux'
-        uses: coverallsapp/github-action@v2.2.1
-        with:
-          github-token: ${{ github.token }}
-          file: ./out/coverage/lcov.info
