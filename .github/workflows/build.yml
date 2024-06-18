@@ -1,0 +1,27 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm install --no-optional
+      - name: Build
+        run: npm run build
+      - name: Coveralls
+        if: runner.os == 'Linux'
+        uses: coverallsapp/github-action@v2.2.1
+        with:
+          github-token: ${{ github.token }}
+          file: ./out/coverage/lcov.info
