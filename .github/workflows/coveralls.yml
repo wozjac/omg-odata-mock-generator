@@ -1,0 +1,26 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  coveralls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: npm install --no-optional
+      - name: Generate coverage
+        run: npm run coverage-lcov
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2.3.0
+        with:
+          github-token: ${{ github.token }}
+          file: ./coverage/lcov.info

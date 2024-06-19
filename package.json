@@ -26,6 +26,7 @@
   "license": "MIT",
   "scripts": {
     "coverage": "c8 npm test",
+    "coverage-lcov": "c8 npm test && c8 report --reporter=lcovonly",
     "coveralls": "c8 npm test && c8 report --reporter=text-lcov | coveralls",
     "lint": "eslint -c config/eslint.config.js src/**.*js",
     "pretest": "npm run lint",
