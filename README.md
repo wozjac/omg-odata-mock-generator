@@ -1,5 +1,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/wozjac/omg-odata-mock-generator/badge.svg?branch=main)](https://coveralls.io/github/wozjac/omg-odata-mock-generator?branch=main)
 ![Build](https://github.com/wozjac/omg-odata-mock-generator/actions/workflows/build.yml/badge.svg)
+![Coveralls](https://github.com/wozjac/omg-odata-mock-generator/actions/workflows/coveralls.yml/badge.svg)
 
 # OMG - OData Mock (data) Generator
 
