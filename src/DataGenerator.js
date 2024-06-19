@@ -97,14 +97,12 @@ export class DataGenerator {
           -2147483648 + this.getPseudoRandomNumber("Binary") * 4294967295
         );
         let sMask = "";
-        /*eslint-disable */
         for (
           let nFlag = 0, nShifted = nMask;
           nFlag < 32;
           nFlag++, sMask += String(nShifted >>> 31), nShifted <<= 1
         );
 
-        /*eslint-enable*/
         return sMask;
       }
       case "DateTimeOffset": {

@@ -27,7 +27,7 @@
   "scripts": {
     "coverage": "c8 npm test",
     "coveralls": "c8 npm test && c8 report --reporter=text-lcov | coveralls",
-    "lint": "eslint -c config/.eslintrc.json src/**.*js",
+    "lint": "eslint -c config/eslint.config.js src/**.*js",
     "pretest": "npm run lint",
     "test": "mocha",
     "rollup": "rollup -c config/rollup.config.js && rollup -c config/rollup.config.env.js",
@@ -40,6 +40,7 @@
   "devDependencies": {
     "@babel/core": "^7.14.2",
     "@babel/preset-env": "^7.14.2",
+    "@eslint/js": "^9.5.0",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^19.0.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
@@ -47,8 +48,9 @@
     "chai": "^4.3.4",
     "core-js": "^3.13.0",
     "coveralls-next": "^4.2.1",
-    "eslint": "^7.26.0",
+    "eslint": "^9.5.0",
     "faker": "^5.5.3",
+    "globals": "^15.6.0",
     "jsdoc": "^3.6.7",
     "mocha": "^8.4.0",
     "mocha-lcov-reporter": "^1.3.0",

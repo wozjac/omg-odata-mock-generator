@@ -83,7 +83,9 @@ export class ODataMockGenerator {
     try {
       this._metdataXMLDocument = parseXML(metadata);
     } catch (error) {
-      throw new Error("Metadata XML parsing error - is the document correct?");
+      throw new Error(
+        "Metadata XML parsing error - is the document correct? --> " + error
+      );
     }
   }
 
@@ -188,6 +190,7 @@ export class ODataMockGenerator {
               try {
                 oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] =
                   oEntity[oNavProp.from.propRef[j]];
+                // eslint-disable-next-line no-unused-vars
               } catch (error) {
                 throw new Error(
                   `Could not find a respective entry in ${oNavProp.to.entitySet} ` +
@@ -440,6 +443,7 @@ export class ODataMockGenerator {
         }
 
         return generatedValue;
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         throw new Error(
           `faker.js call error, check the config for ${entityType.name}/${property.name}`
