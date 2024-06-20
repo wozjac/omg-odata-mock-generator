@@ -51,7 +51,7 @@ describe("ODataMockGenerator - generating with faker", () => {
       rules: {
         faker: {
           Supplier: {
-            Name: "{{system.semver}} --- {{datatype.number}}",
+            Name: "{{system.semver}} --- {{number.int}}",
           },
         },
       },
