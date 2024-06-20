@@ -35,8 +35,7 @@
     "build-docs": "jsdoc -c config/.jsdoc_default.json src README.md",
     "build": "npm run rollup && npm run build-docs",
     "prebuild": "npm test",
-    "release": "standard-version",
-    "publish": "git push --follow-tags origin main && npm publish"
+    "release": "standard-version"
   },
   "devDependencies": {
     "@babel/core": "^7.14.2",
