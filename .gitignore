@@ -4,3 +4,4 @@ coverage
 .local-pack
 *.tgz
 workdir
+.vscode
