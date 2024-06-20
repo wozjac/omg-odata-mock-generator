@@ -187,7 +187,7 @@ For example:
 
 ### Using faker.js
 
-Faker.js [API methods](https://marak.github.io/faker.js/#toc5__anchor) can be provided and they will be used
+Faker.js (v8) [API methods](https://fakerjs.dev) can be provided and they will be used
 instead of default logic for data generation. Alternatively, Mustache-like string with several values
 can be also passed as described in the faker.js docs, for
 example `{{name.lastName}}, {{name.firstName}} {{name.suffix}}`.
