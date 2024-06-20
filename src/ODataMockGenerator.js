@@ -25,7 +25,7 @@
 //! (c) Copyright 2009-2021 SAP SE or an SAP affiliate company.
 //! Licensed under the Apache License, Version 2.0 - see https://github.com/SAP/openui5/blob/master/LICENSE.txt.
 
-import faker from "faker";
+import { faker } from "@faker-js/faker";
 import { parseXML } from "./xmlParser.js";
 import { DataGenerator } from "./DataGenerator.js";
 import * as metadataExtract from "./metadataExtract.js";
@@ -432,7 +432,7 @@ export class ODataMockGenerator {
       // Mustache template?
       try {
         if (fakerCall.indexOf("{{") !== -1) {
-          generatedValue = faker.fake(fakerCall);
+          generatedValue = faker.helpers.fake(fakerCall);
         } else {
           const fakerCallParts = fakerCall.split(".");
           generatedValue = faker[fakerCallParts[0]][fakerCallParts[1]].call();
