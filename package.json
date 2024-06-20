@@ -33,7 +33,7 @@
     "test": "mocha",
     "rollup": "rollup -c config/rollup.config.js && rollup -c config/rollup.config.env.js",
     "build-docs": "jsdoc -c config/.jsdoc_default.json src README.md",
-    "build": "npm run rollup",
+    "build": "npm run rollup && npm run build-docs",
     "prebuild": "npm test",
     "release": "standard-version",
     "publish": "git push --follow-tags origin main && npm publish"
