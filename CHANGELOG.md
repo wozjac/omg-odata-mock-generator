@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.4](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.2.3...v1.2.4) (2024-06-22)
+
 ### [1.2.3](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.2.2...v1.2.3) (2024-06-20)
 
 ### [1.2.2](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.2.0...v1.2.2) (2024-06-19)
