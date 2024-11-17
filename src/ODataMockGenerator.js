@@ -96,7 +96,6 @@ export class ODataMockGenerator {
    * @param {Object} oMockData incoming data
    */
   _applyRelationships(oMockData) {
-    console.log("_applyRelationships", this._relationships);
     for (const [entity, relations] of Object.entries(this._relationships)) {
       if (oMockData[entity]) {
         oMockData[entity].forEach((entityData) => {

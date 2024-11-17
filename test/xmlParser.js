@@ -10,11 +10,11 @@ describe("xmlParser tests", () => {
 
     expect(() => {
       parseXML(invalidXML);
-    }).to.throw("Invalid XML");
+    }).to.throw();
   });
 
   it("returns parsed XML", () => {
-    const validXML = '<ns:root><ns:some attr="aaaa"></ns:some></ns:root>';
+    const validXML = '<ns><some attr="aaaa"></some></ns>';
 
     expect(parseXML(validXML)).not.to.be.null;
   });

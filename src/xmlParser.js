@@ -1,19 +1,6 @@
 import { DOMParser } from "@xmldom/xmldom";
 
 export function parseXML(xml) {
-  let hasErrors = false;
-
-  const parsedXML = new DOMParser({
-    errorHandler: {
-      error: () => {
-        hasErrors = true;
-      },
-    },
-  }).parseFromString(xml);
-
-  if (hasErrors) {
-    throw new Error("Invalid XML");
-  }
-
+  const parsedXML = new DOMParser().parseFromString(xml, "text/xml");
   return parsedXML;
 }
