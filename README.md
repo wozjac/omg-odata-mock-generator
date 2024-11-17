@@ -454,5 +454,5 @@ This plugin is licensed under the [MIT license](http://opensource.org/licenses/M
 Feel free to contact me:
 
 - <wozjac@zoho.com> | <https://jacekw.dev>
-- Twitter (<https://twitter.com/jacekwoz>)
+- Twitter (<https://jacekwoz.bsky.social>)
 - LinkedIn (<https://www.linkedin.com/in/jacek-wznk>)
