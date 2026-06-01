@@ -54,4 +54,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           MERGE_FLAG: ${{ steps.merge-method.outputs.flag }}
-        run: gh pr merge --auto "$MERGE_FLAG" "$PR_URL"
+        run: |
+          gh pr review "$PR_URL" --approve --body "Auto-approving Dependabot ${{ steps.metadata.outputs.update-type }} update."
+          gh pr merge --auto "$MERGE_FLAG" "$PR_URL"
