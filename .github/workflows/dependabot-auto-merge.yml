@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   enable-automerge:
-    if: github.actor == 'dependabot[bot]'
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Dependabot metadata
@@ -22,6 +22,30 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Select allowed merge method
+        if: |
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        id: merge-method
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          allow_merge_commit=$(gh api "repos/$REPO" --jq '.allow_merge_commit')
+          allow_squash_merge=$(gh api "repos/$REPO" --jq '.allow_squash_merge')
+          allow_rebase_merge=$(gh api "repos/$REPO" --jq '.allow_rebase_merge')
+
+          if [ "$allow_squash_merge" = "true" ]; then
+            echo "flag=--squash" >> "$GITHUB_OUTPUT"
+          elif [ "$allow_rebase_merge" = "true" ]; then
+            echo "flag=--rebase" >> "$GITHUB_OUTPUT"
+          elif [ "$allow_merge_commit" = "true" ]; then
+            echo "flag=--merge" >> "$GITHUB_OUTPUT"
+          else
+            echo "No merge methods are enabled in repository settings." >&2
+            exit 1
+          fi
+
       - name: Enable auto-merge for minor and patch updates
         if: |
           steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
@@ -29,4 +53,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        run: gh pr merge --auto --merge "$PR_URL"
+          MERGE_FLAG: ${{ steps.merge-method.outputs.flag }}
+        run: gh pr merge --auto "$MERGE_FLAG" "$PR_URL"
