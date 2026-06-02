@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.2.6...v1.3.0) (2026-06-02)
+
+
+### Features
+
+* auto-approve Dependabot updates before merging ([add11c3](https://github.com/wozjac/omg-odata-mock-generator/commit/add11c3a5ea34d0acbd7d6f3b927301ce000d1ec))
+
+
+### Bug Fixes
+
+* update actions/checkout and actions/setup-node versions in build workflow ([2fdd4f5](https://github.com/wozjac/omg-odata-mock-generator/commit/2fdd4f54ed1eee6604be1a0f6c52e24be85f274d))
+* update auto-merge conditions and improve merge method selection logic ([7200e30](https://github.com/wozjac/omg-odata-mock-generator/commit/7200e301e8ffb5c531765a2f854b5f7aac16c3f2))
+
 ### [1.2.6](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.2.5...v1.2.6) (2025-06-12)
 
 ### [1.2.5](https://github.com/wozjac/omg-odata-mock-generator/compare/v1.2.4...v1.2.5) (2024-11-17)
