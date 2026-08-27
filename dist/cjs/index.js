@@ -9045,7 +9045,8 @@ class ODataMockGenerator {
       this._metdataXMLDocument = parseXML(metadata);
     } catch (error) {
       throw new Error(
-        "Metadata XML parsing error - is the document correct? --> " + error
+        "Metadata XML parsing error - is the document correct? --> " + error,
+        { cause: error }
       );
     }
   }
@@ -9150,12 +9151,12 @@ class ODataMockGenerator {
               try {
                 oMockData[oNavProp.to.entitySet][i][oNavProp.to.propRef[j]] =
                   oEntity[oNavProp.from.propRef[j]];
-                // eslint-disable-next-line no-unused-vars
               } catch (error) {
                 throw new Error(
                   `Could not find a respective entry in ${oNavProp.to.entitySet} ` +
                     `to update its value from a navigation related property ${oNavProp.from.propRef} ` +
-                    `in ${sEntitySetName}. Check it the target entity set generation is not limited or skipped`
+                    `in ${sEntitySetName}. Check it the target entity set generation is not limited or skipped`,
+                  { cause: error }
                 );
               }
             }
@@ -9403,10 +9404,10 @@ class ODataMockGenerator {
         }
 
         return generatedValue;
-        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         throw new Error(
-          `faker.js call error, check the config for ${entityType.name}/${property.name}`
+          `faker.js call error, check the config for ${entityType.name}/${property.name}`,
+          { cause: error }
         );
       }
     }
